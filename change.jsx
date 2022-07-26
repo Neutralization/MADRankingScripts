@@ -11,6 +11,8 @@ PartSize = [1030, 570];
 CompSize = [1280, 720];
 CompFPS = 30;
 
+WeeklyFolder = app.project.items.addFolder(WEEK_NUM);
+
 function AddAudioProperty(Target, Ptype, Duration, Offset, Direction) {
     NewProperty = Target.property('Audio Levels');
     if (Ptype == 1) {
@@ -72,6 +74,7 @@ for (i = 0; i < 20; i++) {
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
     FileItem.name = AllData[i]['av'];
+    FileItem.parentFolder = WeeklyFolder;
 }
 
 for (i = 20; i < 100; i++) {
@@ -80,12 +83,14 @@ for (i = 20; i < 100; i++) {
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
     FileItem.name = AllData[i]['rank'] + '_av' + AllData[i]['av'];
+    FileItem.parentFolder = WeeklyFolder;
 }
 
 watermark = new ImportOptions(File('./水印.png'));
 watermark.ImportAs = ImportAsType.FOOTAGE;
 water = app.project.importFile(watermark);
 water.name = 'WaterMark';
+water.parentFolder = WeeklyFolder;
 
 ResourceID = {};
 for (n = 1; n <= app.project.items.length; n++) {
