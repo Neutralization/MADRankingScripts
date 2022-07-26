@@ -6,7 +6,7 @@ content = file.read();
 file.close();
 AllData = JSON.parse(content);
 
-CoverSize = [154, 96];
+CoverSize = [160, 100];
 PartSize = [1030, 570];
 CompSize = [1280, 720];
 CompFPS = 30;
