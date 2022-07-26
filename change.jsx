@@ -112,22 +112,8 @@ end = edate.getFullYear() + '年' + (edate.getMonth() + 1) + '月' + edate.getDa
 DateComp.layer(4).property('Source Text').expression ='text.sourceText="\\n\\t\\t'+start+'——'+end+'";';
 
 for (i = 19; i >= 0; i--) {
-    // alert('TEXT-UI ' + (i + 1));
-    // alert(AllData[i]["title"]);
     TEXTCompName = 'TEXT-UI ' + (i + 1);
     TEXTComp = app.project.items[ResourceID[TEXTCompName]];
-    datadict = {
-        6: '分',
-        7: '藏',
-        8: '弹',
-        9: '评',
-        10: '点',
-        13: 'rank',
-        14: 'pubdate',
-        15: 'title',
-        16: 'up',
-        17: 'av',
-    };
     // 总分
     TEXTComp.layer(6).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['分']) + '";';
     // 收藏
@@ -258,8 +244,7 @@ for (i = 1; i < 4; i++) {
     TopComp.layer(3).property('Source Text').expression = 'text.sourceText="' + i + '";';
     TopComp.layer(2).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['分'] - AllData[i + 1]['分']) + '";';
 }
-app.endUndoGroup();
-app.beginUndoGroup('Update SUBthing');
+
 for (i = 1; i <= 16; i++) {
     SUBCompName = 'SUBRANK ' + i;
     SUBComp = app.project.items[ResourceID[SUBCompName]];
