@@ -127,6 +127,8 @@ for (i = 19; i >= 0; i--) {
     TEXTComp.layer(15).property('Source Text').expression = 'text.sourceText="' + AllData[i]['title'] + '";';
     // UP
     TEXTComp.layer(16).property('Source Text').expression = 'text.sourceText="' + AllData[i]['up'] + '";';
+    // ID
+    TEXTComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i]['av'] + '";';
     // 上周排名
     TEXTComp.layer(11).property('Source Text').expression = 'text.sourceText="' + AllData[i]['last'] + '";';
     // NEW
