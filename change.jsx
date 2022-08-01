@@ -187,7 +187,7 @@ for (i = 19; i >= 0; i--) {
     VideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i]['av']]], 30);
     delay = 0;
     if (i + 1 < 4) {
-        delay = 2 + 7 / CompFPS;
+        delay = 1 + 7 / CompFPS;
         FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i]['av']]], 80);
         FullVideoLayer.startTime = 0 - AllData[i]['offset'] + delay;
         FullVideoLayer.inPoint = 0;
@@ -219,7 +219,7 @@ for (i = 19; i >= 0; i--) {
     }
     VideoLayer.startTime = 0 - AllData[i]['offset'] + delay;
     VideoLayer.inPoint = 0 + delay;
-    VideoLayer.outPoint = 22 + delay;
+    VideoLayer.outPoint = 21 + delay;
     VideoLayer.moveAfter(MatteLayer);
     VideoLayer.trackMatteType = TrackMatteType.ALPHA;
     OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
@@ -239,7 +239,7 @@ for (i = 19; i >= 0; i--) {
         VideoLayer.audioEnabled = false;
     } else {
         AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
-        AddAudioProperty(VideoLayer, 1, 1, VideoLayer.outPoint - 1.7, 2);
+        AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
     }
 }
 
