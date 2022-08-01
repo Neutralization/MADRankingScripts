@@ -315,6 +315,7 @@ for (i = 1; i <= 16; i++) {
         CoverName = AllData[19 + (i - 1) * 5 + l]['rank'] + '_av' + AllData[19 + (i - 1) * 5 + l]['av'];
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
         CoverLayer.property('Position').setValue([1176.5, 95 + (l - 1) * 142]);
+        CoverLayer.outPoint = SUBComp.layer(2).outPoint
         OrigSize = CoverLayer.sourceRectAtTime(CoverLayer.inPoint, false);
         if (OrigSize.width / OrigSize.height >= 16 / 9) {
             CoverLayer.property('Scale').setValue([
