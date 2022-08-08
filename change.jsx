@@ -130,6 +130,8 @@ for (i = 19; i >= 0; i--) {
     TEXTComp.layer(14).property('Source Text').expression = 'text.sourceText="' + AllData[i]['pubdate'] + '";';
     // 标题
     TEXTComp.layer(15).property('Source Text').expression = "text.sourceText='" + AllData[i]['title'] + "';";
+    TEXTComp.layer(15).property('Source Text').expression.enabled = false;
+    TEXTComp.layer(15).enabled = false;
     if (AllData[i]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
         TEXTComp.layer(15).property('Position').setValue([243, 690]);
     } else {
@@ -262,6 +264,8 @@ for (i = 1; i <= 16; i++) {
         SUBComp.layer(l + 10).property('Source Text').expression = 'text.sourceText="' + AllData[19 + (i - 1) * 5 + l]['rank'] + '";';
         // 标题
         SUBComp.layer(l + 15).property('Source Text').expression = "text.sourceText='" + AllData[19 + (i - 1) * 5 + l]['title'] + "';";
+        SUBComp.layer(l + 15).property('Source Text').expression.enabled = false;
+        SUBComp.layer(l + 15).enabled = false;
         // UP
         SUBComp.layer(l + 20).property('Source Text').expression = 'text.sourceText="' + AllData[19 + (i - 1) * 5 + l]['up'] + '";';
         // 总分
