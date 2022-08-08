@@ -190,7 +190,7 @@ for (i = 19; i >= 0; i--) {
         delay = 1 + 7 / CompFPS;
         FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i]['av']]], 80);
         FullVideoLayer.startTime = 0 - AllData[i]['offset'] + delay;
-        FullVideoLayer.inPoint = 0;
+        FullVideoLayer.inPoint = 1;
         FullVideoLayer.outPoint = 72 + delay;
         OrigSize = FullVideoLayer.sourceRectAtTime(FullVideoLayer.inPoint, false);
         if (OrigSize.width / OrigSize.height >= 16 / 9) {
