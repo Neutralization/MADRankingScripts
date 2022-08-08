@@ -89,6 +89,15 @@ for (i = 20; i < 100; i++) {
     FileItem.parentFolder = WeeklyFolder;
 }
 
+for (i = 0; i < 100; i++) {
+    FileFullPath = './TEXT/' + AllData[i]['rank'] + '_av' + AllData[i]['av'] + '.png';
+    FootageFile = new ImportOptions(File(FileFullPath));
+    FootageFile.ImportAs = ImportAsType.FOOTAGE;
+    FileItem = app.project.importFile(FootageFile);
+    FileItem.name = AllData[i]['rank'] + '_TEXT';
+    FileItem.parentFolder = WeeklyFolder;
+}
+
 watermark = new ImportOptions(File('./水印.png'));
 watermark.ImportAs = ImportAsType.FOOTAGE;
 water = app.project.importFile(watermark);
@@ -177,6 +186,13 @@ for (i = 19; i >= 0; i--) {
         TEXTComp.layer(3).enabled = false;
         TEXTComp.layer(4).enabled = false;
         TEXTComp.layer(5).enabled = true;
+    }
+
+    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i]['rank'] + '_TEXT']], 40);
+    if (AllData[i]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+        TitleImgLayer.property('Position').setValue([844, 736]);
+    } else {
+        TitleImgLayer.property('Position').setValue([824, 736]);
     }
 
     if (i + 1 < 4) {
@@ -331,6 +347,12 @@ for (i = 1; i <= 16; i++) {
                 (CoverSize[1] / OrigSize.height) * 100,
                 (CoverSize[1] / OrigSize.height) * 100,
             ]);
+        }
+        STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[19 + (i - 1) * 5 + l]['rank'] + '_TEXT']], 6);
+        if (AllData[19 + (i - 1) * 5 + l]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+            STitleImgLayer.property('Position').setValue([767, 129 + (l - 1) * 142]);
+        } else {
+            STitleImgLayer.property('Position').setValue([757, 129 + (l - 1) * 142]);
         }
     }
 }
