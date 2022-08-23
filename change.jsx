@@ -3,7 +3,7 @@
 WEEK_NUM = Math.floor((Date.now() / 1000 - 1428681600) / 3600 / 24 / 7);
 
 app.beginUndoGroup('Update Everything');
-file = new File(WEEK_NUM +'期数据.json');
+file = new File(WEEK_NUM + '期数据.json');
 file.open('r');
 content = file.read();
 file.close();
@@ -14,7 +14,7 @@ PartSize = [1030, 570];
 CompSize = [1280, 720];
 CompFPS = 30;
 
-WeeklyFolder = app.project.items.addFolder(WEEK_NUM);
+WeeklyFolder = app.project.items.addFolder('No.' + WEEK_NUM);
 
 function AddAudioProperty(Target, Ptype, Duration, Offset, Direction) {
     NewProperty = Target.property('Audio Levels');
@@ -114,11 +114,11 @@ OPComp.layer(8).property('Source Text').expression = 'text.sourceText="No.' + WE
 
 DateComp = app.project.items[ResourceID['TEXT-03']];
 today = new Date()
-sdate = new Date(Date.now() - (today.getDay() + 8)*24*3600*1000)
+sdate = new Date(Date.now() - (today.getDay() + 8) * 24 * 3600 * 1000)
 start = sdate.getFullYear() + '年' + (sdate.getMonth() + 1) + '月' + sdate.getDate() + '日凌晨'
-edate = new Date(Date.now() - (today.getDay() + 1)*24*3600*1000)
+edate = new Date(Date.now() - (today.getDay() + 1) * 24 * 3600 * 1000)
 end = edate.getFullYear() + '年' + (edate.getMonth() + 1) + '月' + edate.getDate() + '日凌晨'
-DateComp.layer(4).property('Source Text').expression ='text.sourceText="\\n\\t\\t'+start+'——'+end+'";';
+DateComp.layer(4).property('Source Text').expression = 'text.sourceText="\\n\\t\\t' + start + '——' + end + '";';
 
 for (i = 19; i >= 0; i--) {
     TEXTCompName = 'TEXT-UI ' + (i + 1);
