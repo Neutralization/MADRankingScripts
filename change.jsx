@@ -332,6 +332,13 @@ for (i = 1; i <= 16; i++) {
         }
     }
     for (l = 1; l <= 5; l++) {
+        STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[19 + (i - 1) * 5 + l]['rank'] + '_TEXT']], 6);
+        if (AllData[19 + (i - 1) * 5 + l]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+            STitleImgLayer.property('Position').setValue([767, 129 + (l - 1) * 142]);
+        } else {
+            STitleImgLayer.property('Position').setValue([757, 129 + (l - 1) * 142]);
+        }
+        STitleImgLayer.outPoint = SUBComp.layer(2).outPoint
         CoverName = AllData[19 + (i - 1) * 5 + l]['rank'] + '_av' + AllData[19 + (i - 1) * 5 + l]['av'];
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
         CoverLayer.property('Position').setValue([1176.5, 95 + (l - 1) * 142]);
@@ -347,12 +354,6 @@ for (i = 1; i <= 16; i++) {
                 (CoverSize[1] / OrigSize.height) * 100,
                 (CoverSize[1] / OrigSize.height) * 100,
             ]);
-        }
-        STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[19 + (i - 1) * 5 + l]['rank'] + '_TEXT']], 6);
-        if (AllData[19 + (i - 1) * 5 + l]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
-            STitleImgLayer.property('Position').setValue([767, 129 + (l - 1) * 142]);
-        } else {
-            STitleImgLayer.property('Position').setValue([757, 129 + (l - 1) * 142]);
         }
     }
 }
