@@ -3,6 +3,12 @@
 WEEK_NUM = Math.floor((Date.now() / 1000 - 1428681600) / 3600 / 24 / 7);
 
 app.beginUndoGroup('Update Everything');
+for (n = 1; n <= app.project.items.length; n++) {
+    if (app.project.items[n] instanceof FolderItem && app.project.items[n].name.match(/^No./g)) {
+        app.project.items[n].remove()
+    }
+}
+
 file = new File(WEEK_NUM + '期数据.json');
 file.open('r');
 content = file.read();
