@@ -117,17 +117,6 @@ for (i = 100; i < 106; i++) {
     }
 }
 
-for (i = 100; i < 106; i++) {
-    if (AllData[i] != undefined) {
-        FileFullPath = './TEXT/' + AllData[i]['rank'] + '_av' + AllData[i]['av'] + '.png';
-        FootageFile = new ImportOptions(File(FileFullPath));
-        FootageFile.ImportAs = ImportAsType.FOOTAGE;
-        FileItem = app.project.importFile(FootageFile);
-        FileItem.name = AllData[i]['rank'] + '_TEXT';
-        FileItem.parentFolder = WeeklyFolder;
-    }
-}
-
 watermark = new ImportOptions(File('./水印.png'));
 watermark.ImportAs = ImportAsType.FOOTAGE;
 water = app.project.importFile(watermark);
