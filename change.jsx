@@ -160,7 +160,9 @@ for (i = 19; i >= 0; i--) {
     TEXTComp.layer(15).property('Source Text').expression = "text.sourceText='" + AllData[i]['title'] + "';";
     TEXTComp.layer(15).property('Source Text').expression.enabled = false;
     TEXTComp.layer(15).enabled = false;
-    if (AllData[i]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+    if (AllData[i]['title'][0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
+        TEXTComp.layer(15).property('Position').setValue([243, 690]);
+    } else if (AllData[i]['title'].match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
         TEXTComp.layer(15).property('Position').setValue([243, 690]);
     } else {
         TEXTComp.layer(15).property('Position').setValue([223, 690]);
@@ -208,7 +210,9 @@ for (i = 19; i >= 0; i--) {
     }
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i]['rank'] + '_TEXT']], 40);
-    if (AllData[i]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+    if (AllData[i]['title'][0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
+        TitleImgLayer.property('Position').setValue([844, 736]);
+    } else if (AllData[i]['title'].match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
         TitleImgLayer.property('Position').setValue([844, 736]);
     } else {
         TitleImgLayer.property('Position').setValue([824, 736]);
@@ -413,7 +417,9 @@ for (i = 1; i <= 16; i++) {
     }
     for (l = 1; l <= 5; l++) {
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[19 + (i - 1) * 5 + l]['rank'] + '_TEXT']], 6);
-        if (AllData[19 + (i - 1) * 5 + l]['title'][0].match(/[\u0000-\u00ff\u4e00-\u9fa5]/g)) {
+        if (AllData[19 + (i - 1) * 5 + l]['title'][0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
+            STitleImgLayer.property('Position').setValue([767, 129 + (l - 1) * 142]);
+        } else if (AllData[19 + (i - 1) * 5 + l]['title'].match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
             STitleImgLayer.property('Position').setValue([767, 129 + (l - 1) * 142]);
         } else {
             STitleImgLayer.property('Position').setValue([757, 129 + (l - 1) * 142]);
