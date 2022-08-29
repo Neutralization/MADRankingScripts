@@ -89,13 +89,37 @@ for (i = 20; i < 100; i++) {
     FileItem.parentFolder = WeeklyFolder;
 }
 
-for (i = 0; i < 100; i++) {
-    FileFullPath = './TEXT/' + AllData[i]['rank'] + '_av' + AllData[i]['av'] + '.png';
-    FootageFile = new ImportOptions(File(FileFullPath));
-    FootageFile.ImportAs = ImportAsType.FOOTAGE;
-    FileItem = app.project.importFile(FootageFile);
-    FileItem.name = AllData[i]['rank'] + '_TEXT';
-    FileItem.parentFolder = WeeklyFolder;
+for (i = 0; i < 106; i++) {
+    if (AllData[i] != undefined) {
+        FileFullPath = './TEXT/' + AllData[i]['rank'] + '_av' + AllData[i]['av'] + '.png';
+        FootageFile = new ImportOptions(File(FileFullPath));
+        FootageFile.ImportAs = ImportAsType.FOOTAGE;
+        FileItem = app.project.importFile(FootageFile);
+        FileItem.name = AllData[i]['rank'] + '_TEXT';
+        FileItem.parentFolder = WeeklyFolder;
+    }
+}
+
+for (i = 100; i < 106; i++) {
+    if (AllData[i] != undefined) {
+        FileFullPath = './VIDEO/av' + AllData[i]['av'] + '.mp4';
+        FootageFile = new ImportOptions(File(FileFullPath));
+        FootageFile.ImportAs = ImportAsType.FOOTAGE;
+        FileItem = app.project.importFile(FootageFile);
+        FileItem.name = AllData[i]['av'];
+        FileItem.parentFolder = WeeklyFolder;
+    }
+}
+
+for (i = 100; i < 106; i++) {
+    if (AllData[i] != undefined) {
+        FileFullPath = './TEXT/' + AllData[i]['rank'] + '_av' + AllData[i]['av'] + '.png';
+        FootageFile = new ImportOptions(File(FileFullPath));
+        FootageFile.ImportAs = ImportAsType.FOOTAGE;
+        FileItem = app.project.importFile(FootageFile);
+        FileItem.name = AllData[i]['rank'] + '_TEXT';
+        FileItem.parentFolder = WeeklyFolder;
+    }
 }
 
 watermark = new ImportOptions(File('./水印.png'));
@@ -259,6 +283,67 @@ for (i = 19; i >= 0; i--) {
         AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
         AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
     }
+}
+
+for (i = 100; i < 106; i++) {
+    if (AllData[i] != undefined && AllData[i]["rank"] > -4) {
+        TEXTCompName = 'old' + AllData[i]["rank"];
+        UIComp = 'UI-PICK UP old' + AllData[i]["rank"];
+    } else if (AllData[i] != undefined && AllData[i]["rank"] > -7) {
+        TEXTCompName = 'new' + AllData[i]["rank"];
+        UIComp = 'UI-PICK UP new' + AllData[i]["rank"];
+    } else {
+        continue
+    }
+    TEXTComp = app.project.items[ResourceID[TEXTCompName]];
+    PICKUIComp = app.project.items[ResourceID[UIComp]];
+    // ID
+    TEXTComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i]['av'] + '";';
+    // 标题
+    TEXTComp.layer(19).property('Source Text').expression = 'text.sourceText="' + AllData[i]['title'] + '";';
+    TEXTComp.layer(19).property('Source Text').expression.enabled = false;
+    TEXTComp.layer(19).enabled = false;
+    // UP主
+    TEXTComp.layer(18).property('Source Text').expression = 'text.sourceText="' + AllData[i]['up'] + '";';
+    // 日期
+    TEXTComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i]['pubdate'] + '";';
+    // 特点
+    TEXTComp.layer(3).property('Source Text').expression = 'text.sourceText="' + AllData[i]['type'] + '";';
+    // 推荐语
+    TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="' + AllData[i]['comment'].substring(1) + '";';
+    TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i]['comment'].substring(0, 1) + '";';
+
+    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i]['rank'] + '_TEXT']], 40);
+    if (AllData[i]['title'][0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
+        TitleImgLayer.property('Position').setValue([844, 736]);
+    } else if (AllData[i]['title'].match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
+        TitleImgLayer.property('Position').setValue([844, 736]);
+    } else {
+        TitleImgLayer.property('Position').setValue([824, 736]);
+    }
+    MatteLayer = PICKUIComp.layer(38);
+    VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i]['av']]], 30);
+    VideoLayer.startTime = 0 - AllData[i]['offset'];
+    VideoLayer.inPoint = 0;
+    VideoLayer.outPoint = 40;
+    VideoLayer.moveAfter(MatteLayer);
+    VideoLayer.trackMatteType = TrackMatteType.ALPHA;
+    OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
+    if (OrigSize.width / OrigSize.height >= 16 / 9) {
+        VideoLayer.property('Scale').setValue([
+            (PartSize[0] / OrigSize.width) * 100,
+            (PartSize[0] / OrigSize.width) * 100,
+        ]);
+    } else {
+        VideoLayer.property('Scale').setValue([
+            (PartSize[1] / OrigSize.height) * 100,
+            (PartSize[1] / OrigSize.height) * 100,
+        ]);
+    }
+    VideoLayer.property('Position').setValue([739, 334]);
+    AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
+    AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
+
 }
 
 for (i = 1; i < 4; i++) {

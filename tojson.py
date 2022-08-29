@@ -33,6 +33,7 @@ def getcover(aid):
                     "YYYY-MM-DD HH:mm"
                 ),
                 "title": origin,
+                "owner": result["data"]["owner"].get("name"),
             }
         }
     else:
@@ -42,6 +43,7 @@ def getcover(aid):
                 "pic": None,
                 "pubdate": result.get("code"),
                 "title": None,
+                "owner": "",
             }
         }
 
@@ -125,6 +127,47 @@ def readExcel(filename):
         df[0:100].to_json(f, orient="records", force_ascii=False)
 
 
+def pickup():
+    table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"
+    tr = {}
+    for i in range(58):
+        tr[table[i]] = i
+    s = [11, 10, 3, 8, 4, 6]
+    xor = 177451812
+    add = 8728348608
+
+    def dec(x):
+        r = 0
+        for i in range(6):
+            r += tr[x[s[i]]] * 58**i
+        return (r - add) ^ xor
+
+    pickups = [
+        line.strip("\n")
+        for line in open("pickup.txt", "r", encoding="utf-8")
+        if line.strip("\n") != ""
+    ]
+
+    infos = reduce(
+        lambda x, y: {**x, **y},
+        [getcover(dec(pickups[4 * x])) for x in range(len(pickups) // 4)],
+    )
+    jsondata = [
+        {
+            "rank": -(x + 4) if x < len(pickups) // 8 else -(x - 1),
+            "av": dec(pickups[4 * x + 0]),
+            "offset": 0,
+            "title": infos[dec(pickups[4 * x + 0])]["title"],
+            "up": infos[dec(pickups[4 * x + 0])]["owner"],
+            "pubdate": infos[dec(pickups[4 * x + 0])]["pubdate"],
+            "type": f"{pickups[4 * x + 1]}\\n\\n{pickups[4 * x + 2]}",
+            "comment": pickups[4 * x + 3],
+        }
+        for x in range(len(pickups) // 4)
+    ]
+    return jsondata
+
+
 def main():
     readExcel(f"{WEEKS}.xlsx")
     this = json.load(open(f"{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
@@ -135,6 +178,7 @@ def main():
             x["last"] = last_dict.get(x["av"])
         else:
             x["last"] = "null"
+    this += pickup()
     json.dump(
         this, open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8"), ensure_ascii=False
     )
