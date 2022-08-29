@@ -119,6 +119,8 @@ def readExcel(filename):
         )
     )
     df[0:100].to_excel(f"{WEEKS:03d}期数据.xlsx", index=False)
+    with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
+        f.writelines([f"{x}\n" for x in df[0:20]["av"].tolist()])
     with open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8") as f:
         df[0:100].to_json(f, orient="records", force_ascii=False)
 
