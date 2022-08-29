@@ -100,21 +100,21 @@ def readExcel(filename):
                 for x in df.index
                 if df.at[x, "rank"] != "rank"
                 and df.at[x, "rank"] <= 100
-                and df.at[x, "rank"] >= 20
+                and df.at[x, "rank"] > 20
             ],
             [
                 int(df.at[x, "av"])
                 for x in df.index
                 if df.at[x, "av"] != "av"
                 and df.at[x, "rank"] <= 100
-                and df.at[x, "rank"] >= 20
+                and df.at[x, "rank"] > 20
             ],
             [
                 covers[int(df.at[x, "av"])]["pic"]
                 for x in df.index
                 if df.at[x, "av"] != "av"
                 and df.at[x, "rank"] <= 100
-                and df.at[x, "rank"] >= 20
+                and df.at[x, "rank"] > 20
             ],
         )
     )
