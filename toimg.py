@@ -41,8 +41,8 @@ def text2img(name, text, font, emoji, size):
                 body {{
                     font-family: MAD, Emoji, Segoe UI, Segoe UI Historic, Segoe UI Emoji, sans-serif;
                     font-size: {size}px;
-                    word-break: keep-all;
-                    word-wrap: break-word;
+                    overflow: hidden;
+                    white-space: nowrap;
                     text-overflow: ellipsis;
                     text-align: left;
                     color: #FFFFFF;
