@@ -122,7 +122,7 @@ def readExcel(filename):
     )
     df[0:100].to_excel(f"{WEEKS:03d}期数据.xlsx", index=False)
     with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
-        f.writelines([f"{x}\n" for x in df[0:20]["av"].tolist()])
+        f.writelines([f"av{x}\n" for x in df[0:20]["av"].tolist()])
     with open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8") as f:
         df[0:100].to_json(f, orient="records", force_ascii=False)
 
@@ -152,6 +152,8 @@ def pickup():
         lambda x, y: {**x, **y},
         [getcover(dec(pickups[4 * x])) for x in range(len(pickups) // 4)],
     )
+    with open("./psdownload/download.txt", "a", encoding="utf-8") as f:
+        f.writelines([f"av{x}\n" for x in infos.keys()])
     jsondata = [
         {
             "rank": -(x + 4) if x < len(pickups) // 8 else -(x - 1),
