@@ -309,7 +309,7 @@ for (i = 100; i < 106; i++) {
     // 特点
     TEXTComp.layer(3).property('Source Text').expression = 'text.sourceText="' + AllData[i]['type'] + '";';
     // 推荐语
-    TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="' + AllData[i]['comment'].substring(1) + '";';
+    TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i]['comment'].substring(1) + '";';
     TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i]['comment'].substring(0, 1) + '";';
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i]['rank'] + '_TEXT']], 40);
