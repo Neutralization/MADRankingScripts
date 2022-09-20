@@ -246,17 +246,21 @@ for (i = 19; i >= 0; i--) {
             ]);
         }
         FullVideoLayer.property('Position').setValue([640, 360]);
+        TrueDuration = app.project.items[ResourceID[AllData[i].av]].duration;
+        if (UIComp.duration < TrueDuration){
+            TrueDuration = UIComp.duration;
+        }
         FullVideoLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20 - 1 / CompFPS, 0);
         FullVideoLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20, 100);
-        FullVideoLayer.property('Opacity').setValueAtTime(UIComp.duration - 3, 100);
-        FullVideoLayer.property('Opacity').setValueAtTime(UIComp.duration, 0);
+        FullVideoLayer.property('Opacity').setValueAtTime(TrueDuration - 3, 100);
+        FullVideoLayer.property('Opacity').setValueAtTime(TrueDuration, 0);
         AddAudioProperty(FullVideoLayer, 1, 1, FullVideoLayer.inPoint, 1);
-        AddAudioProperty(FullVideoLayer, 1, 3, UIComp.duration - 3, 2);
-        MarkLayer = UIComp.layers.add(app.project.items[ResourceID['WaterMark']], 80);
+        AddAudioProperty(FullVideoLayer, 1, 3, TrueDuration - 3, 2);
+        MarkLayer = UIComp.layers.add(app.project.items[ResourceID.WaterMark], 80);
         MarkLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20 - 1 / CompFPS, 0);
         MarkLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20, 100);
-        MarkLayer.property('Opacity').setValueAtTime(UIComp.duration - 3, 100);
-        MarkLayer.property('Opacity').setValueAtTime(UIComp.duration, 0);
+        MarkLayer.property('Opacity').setValueAtTime(TrueDuration - 3, 100);
+        MarkLayer.property('Opacity').setValueAtTime(TrueDuration, 0);
     }
     VideoLayer.startTime = 0 - AllData[i]['offset'] + delay;
     VideoLayer.inPoint = 0 + delay;
