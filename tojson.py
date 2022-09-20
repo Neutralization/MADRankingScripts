@@ -68,8 +68,16 @@ def readExcel(filename):
         df = df.drop(exclude)
         df = df.sort_index().reset_index(drop=True)
     columns = df.columns.to_list()
-    df.insert(columns.index("av") + 1, "pubdate", [i + 1 for i in range(len(df.index))])
-    df.insert(columns.index("av") + 1, "offset", [0] * len(df.index))
+    if "pubdate" in df.columns:
+        pass
+    else:
+        df.insert(
+            columns.index("av") + 1, "pubdate", [i + 1 for i in range(len(df.index))]
+        )
+    if "offset" in df.columns:
+        pass
+    else:
+        df.insert(columns.index("av") + 1, "offset", [0] * len(df.index))
     for x in df.index:
         df.at[x, "rank"] = int(x + 1)
 
@@ -171,7 +179,7 @@ def pickup():
 
 
 def main():
-    readExcel(f"{WEEKS}.xlsx")
+    readExcel(f"{WEEKS}期数据.xlsx")
     this = json.load(open(f"{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
     last = json.load(open(f"{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
     last_dict = {x["av"]: x["rank"] for x in last}
