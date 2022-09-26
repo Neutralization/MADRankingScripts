@@ -413,6 +413,7 @@ for (i = 1; i <= 16; i++) {
         }
     }
     for (l = 1; l <= 5; l++) {
+        Index = 19 + (i - 1) * 5 + l;
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[Index].rank + '_TEXT']], 6);
         if (AllData[Index].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
             STitleImgLayer.property('Position').setValue([677, 129 + (l - 1) * 142]);
