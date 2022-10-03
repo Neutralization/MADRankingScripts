@@ -184,7 +184,7 @@ def main():
     last = json.load(open(f"{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
     last_dict = {x["av"]: x["rank"] for x in last}
     for x in this:
-        if last_dict.get(x["av"]):
+        if last_dict.get(x["av"]) and last_dict.get(x["av"]) > 0:
             x["last"] = last_dict.get(x["av"])
         else:
             x["last"] = "null"
