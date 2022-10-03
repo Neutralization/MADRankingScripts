@@ -3,8 +3,13 @@ VIDEO/
 TEXT/
 FONT/
 MAD_REMAKE/
+*_AME/
+psdownload/
 
 周刊除外.csv
 水印.png
-*.xlsx
+*.aep
+*.jpg
 *.json
+*.txt
+*.xlsx
