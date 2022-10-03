@@ -33,6 +33,7 @@ def getcover(aid):
                     "YYYY-MM-DD HH:mm"
                 ),
                 "title": origin,
+                "duration": result["data"].get("duration"),
                 "owner": result["data"]["owner"].get("name"),
             }
         }
@@ -43,6 +44,7 @@ def getcover(aid):
                 "pic": None,
                 "pubdate": result.get("code"),
                 "title": None,
+                "duration": -1,
                 "owner": "",
             }
         }
@@ -67,17 +69,18 @@ def readExcel(filename):
         exclude = df.loc[df["av"] == aid].index
         df = df.drop(exclude)
         df = df.sort_index().reset_index(drop=True)
-    columns = df.columns.to_list()
     if "pubdate" in df.columns:
         pass
     else:
-        df.insert(
-            columns.index("av") + 1, "pubdate", [i + 1 for i in range(len(df.index))]
-        )
+        df.insert(0, "pubdate", [0] * len(df.index))
+    if "duration" in df.columns:
+        pass
+    else:
+        df.insert(0, "duration", [0] * len(df.index))
     if "offset" in df.columns:
         pass
     else:
-        df.insert(columns.index("av") + 1, "offset", [0] * len(df.index))
+        df.insert(0, "offset", [0] * len(df.index))
     for x in df.index:
         df.at[x, "rank"] = int(x + 1)
 
@@ -87,13 +90,14 @@ def readExcel(filename):
         [
             getcover(int(df.at[x, "av"]))
             for x in df.index
-            if df.at[x, "av"] != "av" and df.at[x, "rank"] <= 100
+            if df.at[x, "av"] != "av" and df.at[x, "rank"] <= 150
         ],
     )
 
     for x in df.index:
-        if df.at[x, "rank"] <= 100:
+        if df.at[x, "rank"] <= 150:
             df.at[x, "pubdate"] = covers[int(df.at[x, "av"])]["pubdate"]
+            df.at[x, "duration"] = covers[int(df.at[x, "av"])]["duration"]
             df.at[x, "title"] = (
                 covers[int(df.at[x, "av"])]["title"]
                 if covers[int(df.at[x, "av"])]["title"] is not None
@@ -128,7 +132,7 @@ def readExcel(filename):
             ],
         )
     )
-    df[0:100].to_excel(f"{WEEKS:03d}期数据.xlsx", index=False)
+    df.to_excel(f"{WEEKS:03d}期数据.xlsx", index=False)
     with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
         f.writelines([f"av{x}\n" for x in df[0:20]["av"].tolist()])
     with open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8") as f:
