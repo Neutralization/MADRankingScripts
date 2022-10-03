@@ -157,7 +157,7 @@ for (i = 19; i >= 0; i--) {
     // 日期
     TEXTComp.layer(14).property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
     // 标题
-    TEXTComp.layer(15).property('Source Text').expression = 'text.sourceText=\'' + AllData[i].title + '\';';
+    // TEXTComp.layer(15).property('Source Text').expression = 'text.sourceText=\'' + AllData[i].title + '\';';
     TEXTComp.layer(15).property('Source Text').expression.enabled = false;
     TEXTComp.layer(15).enabled = false;
     if (AllData[i].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
@@ -301,7 +301,7 @@ for (i = 100; i < 106; i++) {
     // ID
     TEXTComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
     // 标题
-    TEXTComp.layer(19).property('Source Text').expression = 'text.sourceText="' + AllData[i].title + '";';
+    // TEXTComp.layer(19).property('Source Text').expression = 'text.sourceText="' + AllData[i].title + '";';
     TEXTComp.layer(19).property('Source Text').expression.enabled = false;
     TEXTComp.layer(19).enabled = false;
     // UP主
@@ -366,7 +366,7 @@ for (i = 1; i <= 16; i++) {
         // 排名
         SUBComp.layer(l + 10).property('Source Text').expression = 'text.sourceText="' + AllData[Index].rank + '";';
         // 标题
-        SUBComp.layer(l + 15).property('Source Text').expression = 'text.sourceText=\'' + AllData[Index].title + '\';';
+        // SUBComp.layer(l + 15).property('Source Text').expression = 'text.sourceText=\'' + AllData[Index].title + '\';';
         SUBComp.layer(l + 15).property('Source Text').expression.enabled = false;
         SUBComp.layer(l + 15).enabled = false;
         // UP
