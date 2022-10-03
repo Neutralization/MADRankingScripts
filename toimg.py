@@ -4,6 +4,7 @@ import json
 from os import listdir, remove
 from os.path import abspath
 
+from PIL import Image
 from selenium.webdriver import Edge
 from selenium.webdriver.edge.options import Options
 
@@ -63,6 +64,24 @@ def text2img(name, text, font, emoji, size):
     browser.save_screenshot(f"./TEXT/{name}.png")
 
 
+def crop(name):
+    img = Image.open(f"./TEXT/{name}.png")
+    x, y = img.size
+    i = 0
+    while i <= x:
+        if sum([img.getpixel((i, j))[-1] for j in range(y)]) != 0:
+            break
+        i += 1
+    # j = y - 1
+    # while j >= 0:
+    #     if sum([img.getpixel((i, j))[-1] for i in range(x)]) != 0:
+    #         break
+    #     j -= 1
+    # img = img.crop((i, 0) + (x, j))
+    img = img.crop((i, 0) + (x, y))
+    img.save(f"./TEXT/{name}.png")
+
+
 def main():
     text_font = abspath("./FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
     emoji_font = abspath("./FONT/Noto Emoji.ttf").replace("\\", "/")
@@ -73,6 +92,7 @@ def main():
             text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 25)
         else:
             text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 35)
+        crop(f"{x['rank']}_av{x['av']}")
 
     remove("./TEXT.html")
     browser.quit()

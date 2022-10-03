@@ -158,15 +158,8 @@ for (i = 19; i >= 0; i--) {
     TEXTComp.layer(14).property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
     // 标题
     // TEXTComp.layer(15).property('Source Text').expression = 'text.sourceText=\'' + AllData[i].title + '\';';
-    TEXTComp.layer(15).property('Source Text').expression.enabled = false;
-    TEXTComp.layer(15).enabled = false;
-    if (AllData[i].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
-        TEXTComp.layer(15).property('Position').setValue([153, 690]);
-    } else if (AllData[i].title.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
-        TEXTComp.layer(15).property('Position').setValue([153, 690]);
-    } else {
-        TEXTComp.layer(15).property('Position').setValue([133, 690]);
-    }
+    // TEXTComp.layer(15).property('Source Text').expression.enabled = false;
+    // TEXTComp.layer(15).enabled = false;
     // UP
     TEXTComp.layer(16).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
     // ID
@@ -208,13 +201,8 @@ for (i = 19; i >= 0; i--) {
     }
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
-    if (AllData[i].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
-        TitleImgLayer.property('Position').setValue([754, 736]);
-    } else if (AllData[i].title.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
-        TitleImgLayer.property('Position').setValue([754, 736]);
-    } else {
-        TitleImgLayer.property('Position').setValue([734, 736]);
-    }
+    OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
+    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
 
     if (i + 1 < 4) {
         UICompName = 'UI-TOP' + (i + 1);
@@ -262,7 +250,7 @@ for (i = 19; i >= 0; i--) {
     }
     VideoLayer.startTime = 0 - AllData[i].offset + delay;
     VideoLayer.inPoint = 0 + delay;
-    VideoLayer.outPoint = 21 + delay;
+    VideoLayer.outPoint = 21;
     VideoLayer.moveAfter(MatteLayer);
     VideoLayer.trackMatteType = TrackMatteType.ALPHA;
     OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
@@ -302,8 +290,8 @@ for (i = 100; i < 106; i++) {
     TEXTComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
     // 标题
     // TEXTComp.layer(19).property('Source Text').expression = 'text.sourceText="' + AllData[i].title + '";';
-    TEXTComp.layer(19).property('Source Text').expression.enabled = false;
-    TEXTComp.layer(19).enabled = false;
+    // TEXTComp.layer(19).property('Source Text').expression.enabled = false;
+    // TEXTComp.layer(19).enabled = false;
     // UP主
     TEXTComp.layer(18).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
     // 日期
@@ -315,13 +303,8 @@ for (i = 100; i < 106; i++) {
     TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
-    if (AllData[i].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
-        TitleImgLayer.property('Position').setValue([754, 736]);
-    } else if (AllData[i].title.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
-        TitleImgLayer.property('Position').setValue([754, 736]);
-    } else {
-        TitleImgLayer.property('Position').setValue([734, 736]);
-    }
+    OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
+    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     VideoLayer.startTime = 0 - AllData[i].offset;
@@ -367,8 +350,8 @@ for (i = 1; i <= 16; i++) {
         SUBComp.layer(l + 10).property('Source Text').expression = 'text.sourceText="' + AllData[Index].rank + '";';
         // 标题
         // SUBComp.layer(l + 15).property('Source Text').expression = 'text.sourceText=\'' + AllData[Index].title + '\';';
-        SUBComp.layer(l + 15).property('Source Text').expression.enabled = false;
-        SUBComp.layer(l + 15).enabled = false;
+        // SUBComp.layer(l + 15).property('Source Text').expression.enabled = false;
+        // SUBComp.layer(l + 15).enabled = false;
         // UP
         SUBComp.layer(l + 20).property('Source Text').expression = 'text.sourceText="' + AllData[Index].up + '";';
         // 总分
@@ -415,13 +398,8 @@ for (i = 1; i <= 16; i++) {
     for (l = 1; l <= 5; l++) {
         Index = 19 + (i - 1) * 5 + l;
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[Index].rank + '_TEXT']], 6);
-        if (AllData[Index].title[0].match(/[\u0000-\u00FF\u4E00-\u9FA5]/g)) {
-            STitleImgLayer.property('Position').setValue([677, 129 + (l - 1) * 142]);
-        } else if (AllData[Index].title.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/g)) {
-            STitleImgLayer.property('Position').setValue([677, 129 + (l - 1) * 142]);
-        } else {
-            STitleImgLayer.property('Position').setValue([667, 129 + (l - 1) * 142]);
-        }
+        OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
+        STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 129 + (l - 1) * 142]);
         STitleImgLayer.outPoint = SUBComp.layer(2).outPoint;
         CoverName = AllData[Index].rank + '_av' + AllData[Index].av;
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
