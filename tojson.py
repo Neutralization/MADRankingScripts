@@ -10,7 +10,9 @@ import arrow
 import requests
 from pandas import read_excel
 
-WEEKS = floor((int(arrow.now().timestamp()) - 1428681600) / 3600 / 24 / 7)
+WEEKS = floor(
+    (int(arrow.now("Asia/Shanghai").timestamp()) - 1428681600) / 3600 / 24 / 7
+)
 
 
 def getcover(aid):
@@ -29,9 +31,9 @@ def getcover(aid):
         return {
             aid: {
                 "pic": result["data"].get("pic"),
-                "pubdate": arrow.get(result["data"].get("pubdate")).format(
-                    "YYYY-MM-DD HH:mm"
-                ),
+                "pubdate": arrow.get(
+                    result["data"].get("pubdate"), tzinfo="Asia/Shanghai"
+                ).format("YYYY-MM-DD HH:mm"),
                 "title": origin,
                 "duration": result["data"].get("duration"),
                 "owner": result["data"]["owner"].get("name"),
