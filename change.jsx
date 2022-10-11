@@ -198,6 +198,9 @@ for (i = 19; i >= 0; i--) {
         TEXTComp.layer(3).enabled = false;
         TEXTComp.layer(4).enabled = false;
         TEXTComp.layer(5).enabled = true;
+        TEXTComp.layer(13).effect(1).enabled = true;
+        TEXTComp.layer(13).effect(2).enabled = false;
+        TEXTComp.layer(13).effect(3).enabled = false;
     }
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
