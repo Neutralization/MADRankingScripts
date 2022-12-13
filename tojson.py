@@ -40,7 +40,7 @@ def getcover(aid):
             }
         }
     else:
-        print(f"av{aid} 封面获取失败: {result}")
+        print(f"av{aid} 封面获取失败：{result}")
         return {
             aid: {
                 "pic": None,
@@ -188,15 +188,20 @@ def main():
     readExcel(f"{WEEKS}期数据.xlsx")
     this = json.load(open(f"{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
     last = json.load(open(f"{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
-    last_dict = {x["av"]: x["rank"] for x in last}
+    last_rank = {x["av"]: x["rank"] for x in last}
+    last_offset = {x["av"]: x["offset"] for x in last}
     for x in this:
-        if last_dict.get(x["av"]) and last_dict.get(x["av"]) > 0:
-            x["last"] = last_dict.get(x["av"])
+        if last_rank.get(x["av"]) and last_rank.get(x["av"]) > 0:
+            x["last"] = last_rank.get(x["av"])
+            x["offset"] = last_offset.get(x["av"])
         else:
             x["last"] = "null"
     this += pickup()
     json.dump(
-        this, open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8"), ensure_ascii=False
+        this,
+        open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8"),
+        ensure_ascii=False,
+        indent=4,
     )
 
 
