@@ -83,6 +83,7 @@ def readExcel(filename):
         pass
     else:
         df.insert(0, "offset", [0] * len(df.index))
+    df = df.astype({"offset": "int"})
     for x in df.index:
         df.at[x, "rank"] = int(x + 1)
 
@@ -137,7 +138,7 @@ def readExcel(filename):
     df.to_excel(f"{WEEKS:03d}期数据.xlsx", index=False)
     with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
         f.writelines([f"av{x}\n" for x in df[0:20]["av"].tolist()])
-    with open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8") as f:
+    with open(f"./DATA/{WEEKS:03d}期数据.json", "w", encoding="utf-8") as f:
         df[0:100].to_json(f, orient="records", force_ascii=False)
 
 
@@ -186,8 +187,8 @@ def pickup():
 
 def main():
     readExcel(f"{WEEKS}期数据.xlsx")
-    this = json.load(open(f"{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
-    last = json.load(open(f"{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
+    this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
+    last = json.load(open(f"./DATA/{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
     last_rank = {x["av"]: x["rank"] for x in last}
     last_offset = {x["av"]: x["offset"] for x in last}
     for x in this:
@@ -199,7 +200,7 @@ def main():
     this += pickup()
     json.dump(
         this,
-        open(f"{WEEKS:03d}期数据.json", "w", encoding="utf-8"),
+        open(f"./DATA/{WEEKS:03d}期数据.json", "w", encoding="utf-8"),
         ensure_ascii=False,
         indent=4,
     )

@@ -86,7 +86,7 @@ def main():
     text_font = abspath("./FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
     emoji_font = abspath("./FONT/Noto Emoji.ttf").replace("\\", "/")
 
-    this = json.load(open(f"{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
+    this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
     for x in this:
         if x["rank"] >= 21:
             text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 25)
