@@ -9,14 +9,14 @@ for (n = 1; n <= app.project.items.length; n++) {
     }
 }
 
-file = new File(WEEK_NUM + '期数据.json');
+file = new File('./DATA/' + WEEK_NUM + '期数据.json');
 file.open('r');
 content = file.read();
 file.close();
 AllData = JSON.parse(content);
 
 CoverSize = [160, 100];
-PartSize = [1030, 570];
+PartSize = [1024, 576];
 CompSize = [1280, 720];
 CompFPS = 30;
 
@@ -223,7 +223,7 @@ for (i = 19; i >= 0; i--) {
         FullVideoLayer.inPoint = 1;
         FullVideoLayer.outPoint = 72 + delay;
         OrigSize = FullVideoLayer.sourceRectAtTime(FullVideoLayer.inPoint, false);
-        if (OrigSize.width / OrigSize.height >= 16 / 9) {
+        if (OrigSize.width / OrigSize.height >= CompSize[0] / CompSize[1]) {
             FullVideoLayer.property('Scale').setValue([
                 (CompSize[0] / OrigSize.width) * 100,
                 (CompSize[0] / OrigSize.width) * 100,
@@ -234,7 +234,7 @@ for (i = 19; i >= 0; i--) {
                 (CompSize[1] / OrigSize.height) * 100,
             ]);
         }
-        FullVideoLayer.property('Position').setValue([640, 360]);
+        FullVideoLayer.property('Position').setValue([CompSize[0] / 2, CompSize[1] / 2]);
         TrueDuration = app.project.items[ResourceID[AllData[i].av]].duration;
         if (UIComp.duration < TrueDuration){
             TrueDuration = UIComp.duration;
@@ -253,11 +253,11 @@ for (i = 19; i >= 0; i--) {
     }
     VideoLayer.startTime = 0 - AllData[i].offset + delay;
     VideoLayer.inPoint = 0 + delay;
-    VideoLayer.outPoint = 21;
+    VideoLayer.outPoint = 21 + delay;
     VideoLayer.moveAfter(MatteLayer);
     VideoLayer.trackMatteType = TrackMatteType.ALPHA;
     OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
-    if (OrigSize.width / OrigSize.height >= 16 / 9) {
+    if (OrigSize.width / OrigSize.height >= PartSize[0] / PartSize[1]) {
         VideoLayer.property('Scale').setValue([
             (PartSize[0] / OrigSize.width) * 100,
             (PartSize[0] / OrigSize.width) * 100,
@@ -268,7 +268,7 @@ for (i = 19; i >= 0; i--) {
             (PartSize[1] / OrigSize.height) * 100,
         ]);
     }
-    VideoLayer.property('Position').setValue([739, 334]);
+    VideoLayer.property('Position').setValue([738, 327]);
     if (i + 1 < 4) {
         VideoLayer.audioEnabled = false;
     } else {
@@ -316,7 +316,7 @@ for (i = 100; i < 106; i++) {
     VideoLayer.moveAfter(MatteLayer);
     VideoLayer.trackMatteType = TrackMatteType.ALPHA;
     OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
-    if (OrigSize.width / OrigSize.height >= 16 / 9) {
+    if (OrigSize.width / OrigSize.height >= PartSize[0] / PartSize[1]) {
         VideoLayer.property('Scale').setValue([
             (PartSize[0] / OrigSize.width) * 100,
             (PartSize[0] / OrigSize.width) * 100,
@@ -327,7 +327,7 @@ for (i = 100; i < 106; i++) {
             (PartSize[1] / OrigSize.height) * 100,
         ]);
     }
-    VideoLayer.property('Position').setValue([739, 334]);
+    VideoLayer.property('Position').setValue([738, 327]);
     AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
     AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
 
@@ -409,7 +409,7 @@ for (i = 1; i <= 16; i++) {
         CoverLayer.property('Position').setValue([1176.5, 95 + (l - 1) * 142]);
         CoverLayer.outPoint = SUBComp.layer(2).outPoint;
         OrigSize = CoverLayer.sourceRectAtTime(CoverLayer.inPoint, false);
-        if (OrigSize.width / OrigSize.height >= 16 / 9) {
+        if (OrigSize.width / OrigSize.height >= CoverSize[0] / CoverSize[1]) {
             CoverLayer.property('Scale').setValue([
                 (CoverSize[0] / OrigSize.width) * 100,
                 (CoverSize[0] / OrigSize.width) * 100,
@@ -423,3 +423,4 @@ for (i = 1; i <= 16; i++) {
     }
 }
 app.endUndoGroup();
+app.project.save(File('./MAD_' + WEEK_NUM + '.aep'));
