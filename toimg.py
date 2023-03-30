@@ -98,5 +98,18 @@ def main():
     browser.quit()
 
 
+def pickup():
+    text_font = abspath("./FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
+    emoji_font = abspath("./FONT/Noto Emoji.ttf").replace("\\", "/")
+
+    this = json.load(open("./pickup.json", "r", encoding="utf-8"))
+    for x in this:
+        text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 35)
+        crop(f"{x['rank']}_av{x['av']}")
+
+    remove("./TEXT.html")
+    browser.quit()
+
+
 if __name__ == "__main__":
     main()
