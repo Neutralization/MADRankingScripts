@@ -1,16 +1,16 @@
 COVER/
 DATA/
-VIDEO/
+FOOTAGE/
 TEXT/
-FONT/
-MAD_REMAKE/
+VIDEO/
 *_AME/
 psdownload/
 
 周刊除外.csv
-水印.png
 *.aep
 *.jpg
+*.js
 *.json
+*.psd
 *.txt
 *.xlsx
