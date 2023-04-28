@@ -19,8 +19,12 @@ PartSize = [1030, 570];
 CompSize = [1280, 720];
 CompFPS = 30;
 
-OldPickupComp = app.project.items.addComp('周刊MAD排行榜推荐合集22.12—旧作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
-NewPickupComp = app.project.items.addComp('周刊MAD排行榜推荐合集22.12—新作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
+today = new Date();
+sdate = new Date(Date.now() - (today.getDay() + 8) * 24 * 3600 * 1000);
+compname = '周刊MAD排行榜推荐合集' + sdate.getFullYear() + '.' + (sdate.getMonth() + 1);
+
+OldPickupComp = app.project.items.addComp(compname + '—旧作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
+NewPickupComp = app.project.items.addComp(compname + '—新作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
 
 WeeklyFolder = app.project.items.addFolder('No.' + WEEK_NUM);
 
@@ -107,9 +111,9 @@ function AddAudioProperty(Target, Ptype, Duration, Offset, Direction) {
 
 ReCountResource();
 
-OldPickupComp.layers.add(app.project.items[ResourceID['Transfer-Main Rank 4']], 6 + 1 / 3);
+OldPickupComp.layers.add(app.project.items[ResourceID['Transfer-Main Rank 4 Pickup old']], 6 + 1 / 3);
 OldPickupComp.openInViewer();
-NewPickupComp.layers.add(app.project.items[ResourceID['Transfer-Main Rank 5']], 6 + 1 / 3);
+NewPickupComp.layers.add(app.project.items[ResourceID['Transfer-Main Rank 5 Pickup new']], 6 + 1 / 3);
 NewPickupComp.openInViewer();
 
 for (i = 0; i < AllData.length; i++) {
@@ -120,9 +124,9 @@ for (i = 0; i < AllData.length; i++) {
         ReCountResource();
         PickupComp = OldPickupComp;
     } else if (AllData[i].rank % 10 > 3) {
-        TextComp = app.project.items[ResourceID['new-1']].duplicate();
+        TextComp = app.project.items[ResourceID['new-4']].duplicate();
         ReCountResource();
-        PICKUIComp = app.project.items[ResourceID['UI-PICK UP new-1']].duplicate();
+        PICKUIComp = app.project.items[ResourceID['UI-PICK UP new-4']].duplicate();
         ReCountResource();
         PickupComp = NewPickupComp;
     } else {
