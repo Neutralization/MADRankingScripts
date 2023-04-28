@@ -32,7 +32,7 @@ function Normailze {
     if ($Nvdia) {
         # Nvidia CUDA
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
-            + "-hwaccel cuda -hwaccel_output_format cuda -c:v h264_cuvid "`
+            + "-hwaccel_output_format cuda -c:v h264_cuvid "`
             + "-i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 "`
             + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
