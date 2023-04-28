@@ -20,7 +20,7 @@ function Normailze {
         Write-Host "$($FileName).mp4 Not Exist!" -ForegroundColor Red
         return $null
     }
-    $Target = 'loudnorm=I=-12.0:LRA=+7.0:tp=-2.0'
+    $Target = 'loudnorm=I=-23.0:LRA=+7.0:tp=-1.0'
     $Length = $Length + 5
     $AudioArg = "-y -hide_banner -ss $($Offset) -t $($Length) -i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 -af $($Target):print_format=json -f null -"
     $AudioInfo = "$($DownloadFolder)/ORIGINAL/$($FileName).log"
