@@ -117,7 +117,7 @@ for (i = 100; i < 106; i++) {
     }
 }
 
-watermark = new ImportOptions(File('./水印.png'));
+watermark = new ImportOptions(File('./FOOTAGE/WarteMark.png'));
 watermark.ImportAs = ImportAsType.FOOTAGE;
 water = app.project.importFile(watermark);
 water.name = 'WaterMark';
@@ -219,7 +219,8 @@ for (i = 19; i >= 0; i--) {
     if (i + 1 < 4) {
         delay = 1 + 7 / CompFPS;
         FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 80);
-        FullVideoLayer.startTime = 0 - AllData[i].offset + delay;
+        // FullVideoLayer.startTime = 0 - AllData[i].offset + delay;
+        FullVideoLayer.startTime = 0 + delay;
         FullVideoLayer.inPoint = 1;
         FullVideoLayer.outPoint = 72 + delay;
         OrigSize = FullVideoLayer.sourceRectAtTime(FullVideoLayer.inPoint, false);
@@ -251,7 +252,8 @@ for (i = 19; i >= 0; i--) {
         MarkLayer.property('Opacity').setValueAtTime(TrueDuration - 3, 100);
         MarkLayer.property('Opacity').setValueAtTime(TrueDuration, 0);
     }
-    VideoLayer.startTime = 0 - AllData[i].offset + delay;
+    // VideoLayer.startTime = 0 - AllData[i].offset + delay;
+    VideoLayer.startTime = 0 + delay;
     VideoLayer.inPoint = 0 + delay;
     VideoLayer.outPoint = 21 + delay;
     VideoLayer.moveAfter(MatteLayer);
@@ -310,7 +312,8 @@ for (i = 100; i < 106; i++) {
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
-    VideoLayer.startTime = 0 - AllData[i].offset;
+    // VideoLayer.startTime = 0 - AllData[i].offset;
+    VideoLayer.startTime = 0;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
     VideoLayer.moveAfter(MatteLayer);
