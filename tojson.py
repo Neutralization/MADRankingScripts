@@ -3,8 +3,8 @@
 import json
 from functools import reduce
 from math import floor
-from os.path import abspath
 from os import listdir, remove
+from os.path import abspath
 
 import arrow
 import requests
