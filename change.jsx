@@ -117,7 +117,7 @@ for (i = 100; i < 106; i++) {
     }
 }
 
-watermark = new ImportOptions(File('./FOOTAGE/WarteMark.png'));
+watermark = new ImportOptions(File('./FOOTAGE/WaterMark.png'));
 watermark.ImportAs = ImportAsType.FOOTAGE;
 water = app.project.importFile(watermark);
 water.name = 'WaterMark';
