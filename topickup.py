@@ -1,8 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from functools import reduce
 import json
 import os
+from functools import reduce
+from math import floor
+
+import arrow
+
+BEFORE = floor(
+    (int(arrow.now("Asia/Shanghai").timestamp()) - 1428681600) / 3600 / 24 / 7
+)
+AFTER = floor(
+    (
+        int(arrow.now("Asia/Shanghai").shift(months=-3).shift(weeks=1).timestamp())
+        - 1428681600
+    )
+    / 3600
+    / 24
+    / 7
+)
 
 
 def readjson(week):
@@ -15,7 +31,7 @@ def readjson(week):
     return pickup
 
 
-data = reduce(list.__add__, map(readjson, range(346, 401)))
+data = reduce(list.__add__, map(readjson, range(BEFORE, AFTER)))
 
 with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
     f.writelines([f"av{x['av']}\n" for x in data])
