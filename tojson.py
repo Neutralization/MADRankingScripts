@@ -185,12 +185,23 @@ def pickup():
     return jsondata
 
 
+def olddata():
+    rankdata = {}
+    offsetdata = {}
+    for w in range(376, WEEKS):
+        last = json.load(open(f"./DATA/{w:03d}期数据.json", "r", encoding="utf-8"))
+        rankdata = {**rankdata, **{x["av"]: x["rank"] for x in last if x["rank"] > 0}}
+        offsetdata = {
+            **offsetdata,
+            **{x["av"]: x["offset"] for x in last if x["offset"] != 0},
+        }
+    return rankdata, offsetdata
+
+
 def main():
     readExcel(f"{WEEKS}期数据.xlsx")
     this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
-    last = json.load(open(f"./DATA/{WEEKS-1:03d}期数据.json", "r", encoding="utf-8"))
-    last_rank = {x["av"]: x["rank"] for x in last}
-    last_offset = {x["av"]: x["offset"] for x in last}
+    last_rank, last_offset = olddata()
     for x in this:
         if last_rank.get(x["av"]) and last_rank.get(x["av"]) > 0:
             x["last"] = last_rank.get(x["av"])
