@@ -2,31 +2,18 @@
 
 import http.cookiejar
 import json
+import sys
 
 import requests
 
 
-def main():
+def main(bvid):
     stamp = json.dumps(json.load(open("stamp.json", "r", encoding="utf-8")))
 
     session = requests.session()
     jar = http.cookiejar.MozillaCookieJar("./cookies.txt")
     jar.load(ignore_discard=True, ignore_expires=True)
     session.cookies = jar
-
-    params = (
-        ("mid", "398300398"),
-        ("ps", "30"),
-        ("tid", "0"),
-        ("pn", "1"),
-        ("keyword", "MAD"),
-        ("order", "pubdate"),
-        ("jsonp", "jsonp"),
-    )
-    response = session.get("https://api.bilibili.com/x/space/arc/search", params=params)
-    result = json.loads(response.content)
-    bvid = result["data"]["list"]["vlist"][0]["bvid"]
-    print(bvid)
 
     params = (("bvid", bvid),)
     response = session.get(
@@ -51,4 +38,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])
