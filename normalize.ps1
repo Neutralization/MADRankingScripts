@@ -37,8 +37,7 @@ function Normailze {
             + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
             + "-c:v h264_nvenc -b:v 20M -c:a aac -b:a 320k $($DownloadFolder)/$($FileName).mp4"
-    }
-    elseif ($Intel) {
+    } elseif ($Intel) {
         # Intel QSV
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
             + "-init_hw_device qsv=hw -filter_hw_device hw "`
@@ -47,8 +46,7 @@ function Normailze {
             + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
             + "-c:v h264_qsv -b:v 20M -c:a aac -b:a 320k $($DownloadFolder)/$($FileName).mp4"
-    }
-    else {
+    } else {
         # x264
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
             + "-i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 "`
@@ -62,30 +60,25 @@ function Normailze {
 
 function Main {
     $RankVideos = @()
-    $LocalVideos = @()
-    Get-content -Path "$($DataFolder)/$($RankNum)期数据.json" | ConvertFrom-Json | ForEach-Object {
+    if ($RankNum -eq "pickup") {
+        $JsonData = Get-Content -Path "pickup.json"
+    } else {
+        $JsonData = Get-Content -Path "$($DataFolder)/$($RankNum)期数据.json"
+    }
+    $JsonData | ConvertFrom-Json | ForEach-Object {
         if ($_.rank -le 0) {
             $RankVideos += @{n = "av$($_.av)"; o = $_.offset; l = 40 }
-        }
-        elseif ($_.rank -le 3) {
+        } elseif ($_.rank -le 3) {
             $RankVideos += @{n = "av$($_.av)"; o = $_.offset; l = 70 }
-        }
-        elseif ($_.rank -le 20) {
+        } elseif ($_.rank -le 20) {
             $RankVideos += @{n = "av$($_.av)"; o = $_.offset; l = 20 }
+        } elseif ($_.rank -ge 1000) {
+            $RankVideos += @{n = "av$($_.av)"; o = $_.offset; l = 40 }
         }
     }
 
-    Get-ChildItem "$($DownloadFolder)/*.mp4" | ForEach-Object { $LocalVideos += $_.BaseName }
     $RankVideos | ForEach-Object {
-        if ($LocalVideos -notcontains $_.n) {
-            Normailze $_.n $_.o $_.l
-        }
-        elseif ((Get-Item "$($DownloadFolder)/$($_.n).mp4").length -eq 0) {
-            Normailze $_.n $_.o $_.l
-        }
-        else {
-            Write-Host "$($_.n) Already Normalized." -ForegroundColor Yellow
-        }
+        Normailze $_.n $_.o $_.l
     }
 
     Add-Type -AssemblyName Microsoft.VisualBasic

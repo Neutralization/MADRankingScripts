@@ -3,6 +3,7 @@
 import json
 from os import listdir, remove
 from os.path import abspath
+import sys
 
 from PIL import Image
 from selenium.webdriver import Edge
@@ -112,4 +113,7 @@ def pickup():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1] == "pickup":
+        pickup()
+    else:
+        main()
