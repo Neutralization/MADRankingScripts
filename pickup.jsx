@@ -147,7 +147,8 @@ for (i = 0; i < AllData.length; i++) {
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
-    VideoLayer.startTime = 0 - AllData[i].offset;
+    // VideoLayer.startTime = 0 - AllData[i].offset;
+    VideoLayer.startTime = 0;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
     VideoLayer.moveAfter(MatteLayer);
