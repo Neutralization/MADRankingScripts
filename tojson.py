@@ -198,6 +198,22 @@ def olddata():
     return rankdata, offsetdata
 
 
+def rankdoor():
+    rank = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
+    result = [
+        [
+            x["rank"],
+            f"av{x['av']}",
+        ]
+        for x in rank
+        if x["rank"] <= 20
+    ]
+    result.sort(key=lambda z: z[0], reverse=True)
+    with open("rankdoor.csv", "w", encoding="utf-8-sig") as f:
+        for x in result:
+            f.write(f"{x[0] if x[0] > 0 else '旧作' if x[0] >= -3 else '新作'},{x[1]}\n")
+
+
 def main():
     readExcel(f"{WEEKS}期数据.xlsx")
     this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
@@ -215,6 +231,7 @@ def main():
         ensure_ascii=False,
         indent=4,
     )
+    rankdoor()
 
 
 if __name__ == "__main__":
