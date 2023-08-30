@@ -190,11 +190,20 @@ def olddata():
     offsetdata = {}
     for w in range(376, WEEKS):
         last = json.load(open(f"./DATA/{w:03d}期数据.json", "r", encoding="utf-8"))
-        rankdata = {**rankdata, **{x["av"]: x["rank"] for x in last if x["rank"] > 0}}
-        offsetdata = {
-            **offsetdata,
-            **{x["av"]: x["offset"] for x in last if x["offset"] != 0},
-        }
+        rankdata = {x["av"]: x["rank"] for x in last if x["rank"] > 0}
+        for x in last:
+            offsetdata[x["av"]] = (
+                offsetdata[x["av"]]
+                + (
+                    [x["offset"]]
+                    if x["offset"] is not None
+                    and x["offset"] > 0
+                    and x["offset"] != offsetdata[x["av"]][-1]
+                    else []
+                )
+                if offsetdata.get(x["av"])
+                else [x["offset"]]
+            )
     return rankdata, offsetdata
 
 
@@ -219,11 +228,14 @@ def main():
     this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
     last_rank, last_offset = olddata()
     for x in this:
-        if last_rank.get(x["av"]) and last_rank.get(x["av"]) > 0:
+        if last_rank.get(x["av"]):
             x["last"] = last_rank.get(x["av"])
-            x["offset"] = last_offset.get(x["av"])
         else:
             x["last"] = "null"
+        if last_offset.get(x["av"]):
+            x["offset"] = last_offset.get(x["av"])[-1]
+        else:
+            x["offset"] = 0
     this += pickup()
     json.dump(
         this,
