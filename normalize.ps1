@@ -34,25 +34,25 @@ function Normailze {
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
             + "-hwaccel_output_format cuda -c:v h264_cuvid "`
             + "-i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 "`
-            + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
+            + "-vf scale='ceil((min(1,gt(iw,1280)+gt(ih,720))*(gte(a,1280/720)*1280+lt(a,1280/720)*((720*iw)/ih))+not(min(1,gt(iw,1280)+gt(ih,720)))*iw)/2)*2:ceil((min(1,gt(iw,1280)+gt(ih,720))*(lte(a,1280/720)*720+gt(a,1280/720)*((1280*ih)/iw))+not(min(1,gt(iw,1280)+gt(ih,720)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
-            + "-c:v h264_nvenc -b:v 20M -c:a aac -b:a 320k $($DownloadFolder)/$($FileName).mp4"
+            + "-c:v h264_nvenc -b:v 10M -c:a aac -b:a 320k -r 30 $($DownloadFolder)/$($FileName).mp4"
     } elseif ($Intel) {
         # Intel QSV
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
             + "-init_hw_device qsv=hw -filter_hw_device hw "`
             + "-i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 "`
             + "-vf hwupload=extra_hw_frames=64,format=qsv "`
-            + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
+            + "-vf scale='ceil((min(1,gt(iw,1280)+gt(ih,720))*(gte(a,1280/720)*1280+lt(a,1280/720)*((720*iw)/ih))+not(min(1,gt(iw,1280)+gt(ih,720)))*iw)/2)*2:ceil((min(1,gt(iw,1280)+gt(ih,720))*(lte(a,1280/720)*720+gt(a,1280/720)*((1280*ih)/iw))+not(min(1,gt(iw,1280)+gt(ih,720)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
-            + "-c:v h264_qsv -b:v 20M -c:a aac -b:a 320k $($DownloadFolder)/$($FileName).mp4"
+            + "-c:v h264_qsv -b:v 10M -c:a aac -b:a 320k -r 30 $($DownloadFolder)/$($FileName).mp4"
     } else {
         # x264
         $VideoArg = "-y -hide_banner -loglevel error -ss $($Offset) -t $($Length) "`
             + "-i $($DownloadFolder)/ORIGINAL/$($FileName).mp4 "`
-            + "-vf scale='ceil((min(1,gt(iw,1920)+gt(ih,1080))*(gte(a,1920/1080)*1920+lt(a,1920/1080)*((1080*iw)/ih))+not(min(1,gt(iw,1920)+gt(ih,1080)))*iw)/2)*2:ceil((min(1,gt(iw,1920)+gt(ih,1080))*(lte(a,1920/1080)*1080+gt(a,1920/1080)*((1920*ih)/iw))+not(min(1,gt(iw,1920)+gt(ih,1080)))*ih)/2)*2' "`
+            + "-vf scale='ceil((min(1,gt(iw,1280)+gt(ih,720))*(gte(a,1280/720)*1280+lt(a,1280/720)*((720*iw)/ih))+not(min(1,gt(iw,1280)+gt(ih,720)))*iw)/2)*2:ceil((min(1,gt(iw,1280)+gt(ih,720))*(lte(a,1280/720)*720+gt(a,1280/720)*((1280*ih)/iw))+not(min(1,gt(iw,1280)+gt(ih,720)))*ih)/2)*2' "`
             + "-af $($Target):print_format=summary:linear=true:$($Source) -ar 48000 "`
-            + "-c:v libx264 -b:v 20M -c:a aac -b:a 320k $($DownloadFolder)/$($FileName).mp4"
+            + "-c:v libx264 -b:v 10M -c:a aac -b:a 320k -r 30 $($DownloadFolder)/$($FileName).mp4"
     }
     Start-Process -NoNewWindow -Wait -FilePath 'ffmpeg.exe' -ArgumentList $VideoArg
     Write-Host "$($FileName) Finish!" -ForegroundColor White
