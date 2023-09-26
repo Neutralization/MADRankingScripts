@@ -128,6 +128,9 @@ for (n = 1; n <= app.project.items.length; n++) {
     ResourceID[app.project.items[n].name] = n;
 }
 
+CoverComp = app.project.items[ResourceID['周刊MAD排行榜-封面']];
+CoverComp.layer(1).property('Source Text').expression = 'text.sourceText=' + WEEK_NUM + ';';
+
 OPComp = app.project.items[ResourceID.OP];
 OPComp.layer(8).property('Source Text').expression = 'text.sourceText="No.' + WEEK_NUM + '";';
 
