@@ -41,6 +41,9 @@ def getcover(aid):
         }
     else:
         print(f"av{aid} 封面获取失败：{result}")
+        if int(result.get("code")) == 62002:
+            with open("./周刊除外.csv", "a", encoding="utf-8-sig") as f:
+                f.write(f"{aid}\n")
         return {
             aid: {
                 "pic": None,
