@@ -41,7 +41,7 @@ def readjson(week):
 
 def main():
     print(SNum, ENum)
-    data = reduce(list.__add__, map(readjson, range(SNum, ENum)))
+    data = reduce(list.__add__, map(readjson, range(SNum, ENum + 1)))
 
     with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
         f.writelines([f"av{x['av']}\n" for x in data])
