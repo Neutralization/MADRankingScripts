@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
-from os import listdir, remove
-from os.path import abspath
+from os import remove, makedirs
+from os.path import abspath, exists
 import sys
 
 from PIL import Image
@@ -24,8 +24,8 @@ data = json.dumps(
     }
 )
 browser.command_executor._request("POST", url, data)
-for file in listdir("./TEXT/"):
-    remove(f"./TEXT/{file}")
+if not exists(f"./TEXT/{WEEKS}"):
+    makedirs(f"./TEXT/{WEEKS}")
 
 
 def text2img(name, text, font, emoji, size):
@@ -61,12 +61,12 @@ def text2img(name, text, font, emoji, size):
         f.write(html_content)
 
     browser.get(f'file://{abspath("TEXT.html")}')
-    print(f"./TEXT/{name}.png")
-    browser.save_screenshot(f"./TEXT/{name}.png")
+    print(f"./TEXT/{WEEKS}/{name}.png")
+    browser.save_screenshot(f"./TEXT/{WEEKS}/{name}.png")
 
 
 def crop(name):
-    img = Image.open(f"./TEXT/{name}.png")
+    img = Image.open(f"./TEXT/{WEEKS}/{name}.png")
     x, y = img.size
     i = 0
     while i <= x:
@@ -80,7 +80,7 @@ def crop(name):
     #     j -= 1
     # img = img.crop((i, 0) + (x, j))
     img = img.crop((i, 0) + (x, y))
-    img.save(f"./TEXT/{name}.png")
+    img.save(f"./TEXT/{WEEKS}/{name}.png")
 
 
 def main():

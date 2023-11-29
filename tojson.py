@@ -3,8 +3,8 @@
 import json
 from functools import reduce
 from math import floor
-from os import listdir, remove
-from os.path import abspath
+from os import remove, makedirs
+from os.path import abspath, exists
 
 import arrow
 import requests
@@ -61,7 +61,7 @@ def downcover(rank, aid, link):
     except requests.exceptions.MissingSchema:
         print(f"requests.exceptions.MissingSchema: av{aid}\n")
         return None
-    with open(f"./COVER/{rank}_av{aid}.jpg", "wb") as f:
+    with open(f"./COVER/{WEEKS}/{rank}_av{aid}.jpg", "wb") as f:
         f.write(response.content)
 
 
@@ -110,8 +110,8 @@ def readExcel(filename):
                 else df.at[x, "title"]
             )
 
-    for file in listdir("./COVER/"):
-        remove(f"./COVER/{file}")
+    if not exists(f"./COVER/{WEEKS}"):
+        makedirs(f"./COVER/{WEEKS}")
     list(
         map(
             downcover,
@@ -162,7 +162,7 @@ def pickup():
 
     pickups = [
         line.strip("\n")
-        for line in open("pickup.txt", "r", encoding="utf-8")
+        for line in open(f"pickup{WEEKS:03d}.txt", "r", encoding="utf-8")
         if line.strip("\n") != ""
     ]
 
@@ -221,7 +221,7 @@ def rankdoor():
         if x["rank"] <= 20
     ]
     result.sort(key=lambda z: z[0], reverse=True)
-    with open("rankdoor.csv", "w", encoding="utf-8-sig") as f:
+    with open(f"{WEEKS:03d}_rankdoor.csv", "w", encoding="utf-8-sig") as f:
         for x in result:
             f.write(f"{x[0] if x[0] > 0 else '旧作' if x[0] >= -3 else '新作'},{x[1]}\n")
 
