@@ -1,20 +1,12 @@
-__pycache__/
-node_modules/
-venv/
-COVER/
 DATA/
 FOOTAGE/
-TEXT/
-VIDEO/
 *_AME/
 psdownload/
 
-周刊除外.csv
 *.aep
+*.csv
 *.jpg
 *.js
 *.json
-*.psd
 *.txt
 *.xlsx
-*.mp4
