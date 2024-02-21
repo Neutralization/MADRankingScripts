@@ -9,6 +9,7 @@ $FootageFolder = "$($TruePath)/FOOTAGE/No.$($RankNum)/VIDEO"
 
 if (Test-Path -Path 'C:/Windows/System32/nvcuvid.dll') { $Nvdia = $true } else { $Nvdia = $false }
 if ((WMIC CPU Get Name) -match 'Intel') { $Intel = $true } else { $Intel = $false }
+$Nvdia = $false
 
 function Normailze {
     param (
