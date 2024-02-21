@@ -146,19 +146,39 @@ def readExcel(filename):
 
 
 def pickup():
-    table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"
-    tr = {}
-    for i in range(58):
-        tr[table[i]] = i
-    s = [11, 10, 3, 8, 4, 6]
-    xor = 177451812
-    add = 8728348608
+    XOR_CODE = 23442827791579
+    MASK_CODE = 2251799813685247
+    MAX_AID = 1 << 51
+    BASE = 58
+    BV_LEN = 12
+    ALPHABET = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf"
 
-    def dec(x):
-        r = 0
-        for i in range(6):
-            r += tr[x[s[i]]] * 58**i
-        return (r - add) ^ xor
+    table = {}
+    for i in range(58):
+        table[ALPHABET[i]] = i
+
+    def av2bv(avid: int):
+        bv_list = list("BV1000000000")
+        bv_idx = BV_LEN - 1
+        tmp = (MAX_AID | avid) ^ XOR_CODE
+        while tmp != 0:
+            bv_list[bv_idx] = ALPHABET[tmp % BASE]
+            tmp //= BASE
+            bv_idx -= 1
+        bv_list[3], bv_list[9] = bv_list[9], bv_list[3]
+        bv_list[4], bv_list[7] = bv_list[7], bv_list[4]
+        return "".join(bv_list)
+
+    def bv2av(bvid: str):
+        bv_list = list(bvid)
+        bv_list[3], bv_list[9] = bv_list[9], bv_list[3]
+        bv_list[4], bv_list[7] = bv_list[7], bv_list[4]
+        tmp = 0
+        for char in bv_list[3:]:
+            idx = table[char]
+            tmp = tmp * BASE + idx
+        avid = (tmp & MASK_CODE) ^ XOR_CODE
+        return avid
 
     pickups = [
         line.strip("\n")
@@ -168,18 +188,18 @@ def pickup():
 
     infos = reduce(
         lambda x, y: {**x, **y},
-        [getcover(dec(pickups[4 * x])) for x in range(len(pickups) // 4)],
+        [getcover(bv2av(pickups[4 * x])) for x in range(len(pickups) // 4)],
     )
     with open("./psdownload/download.txt", "a", encoding="utf-8") as f:
         f.writelines([f"av{x}\n" for x in infos.keys()])
     jsondata = [
         {
             "rank": -(x + 4) if x < len(pickups) // 8 else -(x - 1),
-            "av": dec(pickups[4 * x + 0]),
+            "av": bv2av(pickups[4 * x + 0]),
             "offset": 0,
-            "title": infos[dec(pickups[4 * x + 0])]["title"],
-            "up": infos[dec(pickups[4 * x + 0])]["owner"],
-            "pubdate": infos[dec(pickups[4 * x + 0])]["pubdate"],
+            "title": infos[bv2av(pickups[4 * x + 0])]["title"],
+            "up": infos[bv2av(pickups[4 * x + 0])]["owner"],
+            "pubdate": infos[bv2av(pickups[4 * x + 0])]["pubdate"],
             "type": f"{pickups[4 * x + 1]}\\n\\n{pickups[4 * x + 2]}",
             "comment": pickups[4 * x + 3],
         }
@@ -223,7 +243,9 @@ def rankdoor():
     result.sort(key=lambda z: z[0], reverse=True)
     with open(f"{WEEKS:03d}_rankdoor.csv", "w", encoding="utf-8-sig") as f:
         for x in result:
-            f.write(f"{x[0] if x[0] > 0 else '旧作' if x[0] >= -3 else '新作'},{x[1]}\n")
+            f.write(
+                f"{x[0] if x[0] > 0 else '旧作' if x[0] >= -3 else '新作'},{x[1]}\n"
+            )
 
 
 def main():
