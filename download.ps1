@@ -198,7 +198,7 @@ function Main {
     $ExistVideos = @()
     Get-ChildItem "$($DownloadFolder)/*.mp4" | ForEach-Object { $ExistVideos += $_.BaseName }
     Get-Content "$($TruePath)/DATA/$($RankNum)期数据.json" | ConvertFrom-Json | Where-Object {
-        $_.rank -le 20 
+        $_.rank -le 20
     } | Select-Object -ExpandProperty av | ForEach-Object {
         $RankVideos += "av$($_)"
     }
