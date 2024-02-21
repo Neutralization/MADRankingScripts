@@ -191,14 +191,7 @@ def lastrank():
 
 
 def rankdoor(rank):
-    result = [
-        [
-            x["rank"],
-            f"av{x['av']}",
-        ]
-        for x in rank
-        if x["rank"] <= 20
-    ]
+    result = [[x["rank"], f"av{x['av']}"] for x in rank if x["rank"] <= 20]
     result.sort(key=lambda z: z[0], reverse=True)
     with open(f"{WEEKS:03d}_rankdoor.csv", "w", encoding="utf-8-sig") as f:
         f.writelines(
