@@ -84,7 +84,7 @@ function numberWithCommas(x) {
 }
 
 for (i = 0; i < 20; i++) {
-    FileFullPath = './VIDEO/' + WEEK_NUM + '/av' + AllData[i].av + '.mp4';
+    FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
     FootageFile = new ImportOptions(File(FileFullPath));
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
@@ -93,7 +93,7 @@ for (i = 0; i < 20; i++) {
 }
 
 for (i = 20; i < 100; i++) {
-    FileFullPath = './COVER/' + WEEK_NUM + '/' + AllData[i].rank + '_av' + AllData[i].av + '.jpg';
+    FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/COVER/' + AllData[i].rank + '_av' + AllData[i].av + '.jpg';
     FootageFile = new ImportOptions(File(FileFullPath));
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
@@ -103,7 +103,7 @@ for (i = 20; i < 100; i++) {
 
 for (i = 0; i < 106; i++) {
     if (AllData[i] != undefined) {
-        FileFullPath = './TEXT/' + WEEK_NUM + '/' + AllData[i].rank + '_av' + AllData[i].av + '.png';
+        FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/TEXT/' + AllData[i].rank + '_av' + AllData[i].av + '.png';
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
@@ -114,7 +114,7 @@ for (i = 0; i < 106; i++) {
 
 for (i = 100; i < 106; i++) {
     if (AllData[i] != undefined) {
-        FileFullPath = './VIDEO/' + WEEK_NUM + '/av' + AllData[i].av + '.mp4';
+        FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
