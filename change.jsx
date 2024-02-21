@@ -21,6 +21,12 @@ CompSize = [1280, 720];
 CompFPS = 30;
 
 WeeklyFolder = app.project.items.addFolder('No.' + WEEK_NUM);
+VideoFolder = app.project.items.addFolder('VIDEO');
+VideoFolder.parentFolder = WeeklyFolder;
+CoverFolder = app.project.items.addFolder('COVER');
+CoverFolder.parentFolder = WeeklyFolder;
+TextFolder = app.project.items.addFolder('TEXT');
+TextFolder.parentFolder = WeeklyFolder;
 
 function AddAudioProperty(Target, Ptype, Duration, Offset, Direction) {
     NewProperty = Target.property('Audio Levels');
@@ -83,7 +89,7 @@ for (i = 0; i < 20; i++) {
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
     FileItem.name = AllData[i].av;
-    FileItem.parentFolder = WeeklyFolder;
+    FileItem.parentFolder = VideoFolder;
 }
 
 for (i = 20; i < 100; i++) {
@@ -92,7 +98,7 @@ for (i = 20; i < 100; i++) {
     FootageFile.ImportAs = ImportAsType.FOOTAGE;
     FileItem = app.project.importFile(FootageFile);
     FileItem.name = AllData[i].rank + '_av' + AllData[i].av;
-    FileItem.parentFolder = WeeklyFolder;
+    FileItem.parentFolder = CoverFolder;
 }
 
 for (i = 0; i < 106; i++) {
@@ -102,7 +108,7 @@ for (i = 0; i < 106; i++) {
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
         FileItem.name = AllData[i].rank + '_TEXT';
-        FileItem.parentFolder = WeeklyFolder;
+        FileItem.parentFolder = TextFolder;
     }
 }
 
@@ -113,15 +119,15 @@ for (i = 100; i < 106; i++) {
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
         FileItem.name = AllData[i].av;
-        FileItem.parentFolder = WeeklyFolder;
+        FileItem.parentFolder = VideoFolder;
     }
 }
 
-watermark = new ImportOptions(File('./FOOTAGE/WaterMark.png'));
-watermark.ImportAs = ImportAsType.FOOTAGE;
-water = app.project.importFile(watermark);
-water.name = 'WaterMark';
-water.parentFolder = WeeklyFolder;
+// watermark = new ImportOptions(File('./FOOTAGE/WaterMark.png'));
+// watermark.ImportAs = ImportAsType.FOOTAGE;
+// water = app.project.importFile(watermark);
+// water.name = 'WaterMark';
+// water.parentFolder = WeeklyFolder;
 
 ResourceID = {};
 for (n = 1; n <= app.project.items.length; n++) {
@@ -216,6 +222,9 @@ for (i = 19; i >= 0; i--) {
         UICompName = 'UI ' + (i + 1);
     }
     UIComp = app.project.items[ResourceID[UICompName]];
+    if (UIComp.layer(1).name == 'WaterMark.png') {
+        UIComp.layer(1).remove();
+    }
     MatteLayer = UIComp.layer(36);
     VideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     delay = 0;
@@ -249,7 +258,7 @@ for (i = 19; i >= 0; i--) {
         FullVideoLayer.property('Opacity').setValueAtTime(TrueDuration, 0);
         AddAudioProperty(FullVideoLayer, 1, 1, FullVideoLayer.inPoint, 1);
         AddAudioProperty(FullVideoLayer, 1, 3, TrueDuration - 3, 2);
-        MarkLayer = UIComp.layers.add(app.project.items[ResourceID.WaterMark], 80);
+        MarkLayer = UIComp.layers.add(app.project.items[ResourceID['WaterMark.png']], 80);
         MarkLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20 - 1 / CompFPS, 0);
         MarkLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20, 100);
         MarkLayer.property('Opacity').setValueAtTime(TrueDuration - 3, 100);
