@@ -1,5 +1,5 @@
 param (
-    [string]$RankNum = [Math]::Round(((Get-Date).ToFileTime() / 10000000 - 11644473600 - 1428681600) / 3600 / 24 / 7)
+    [string]$RankNum = [Math]::Floor(((Get-Date).ToFileTime() / 10000000 - 11644473600 - 1428681600) / 3600 / 24 / 7)
 )
 $ProgressPreference = 'SilentlyContinue'
 $TruePath = Split-Path $MyInvocation.MyCommand.Path
