@@ -2,9 +2,9 @@
 
 import json
 from os import remove, makedirs
-from os.path import abspath, exists
+from os.path import abspath
 import sys
-
+import requests
 from PIL import Image
 from selenium.webdriver import Edge
 from selenium.webdriver.edge.options import Options
@@ -24,8 +24,19 @@ data = json.dumps(
     }
 )
 browser.command_executor._request("POST", url, data)
-if not exists(f"./TEXT/{WEEKS}"):
-    makedirs(f"./TEXT/{WEEKS}")
+text_font = abspath("./FOOTAGE/FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
+emoji_font = abspath("./FOOTAGE/FONT/Noto Emoji.ttf").replace("\\", "/")
+
+
+def downcover(data):
+    rank, aid, link = data
+    try:
+        response = requests.get(f"{link}@640w_400h.jpg")
+    except requests.exceptions.MissingSchema:
+        print(f"requests.exceptions.MissingSchema: av{aid}\n")
+        return None
+    with open(f"./FOOTAGE/No.{WEEKS}/COVER/{rank}_av{aid}.jpg", "wb") as f:
+        f.write(response.content)
 
 
 def text2img(name, text, font, emoji, size):
@@ -61,12 +72,12 @@ def text2img(name, text, font, emoji, size):
         f.write(html_content)
 
     browser.get(f'file://{abspath("TEXT.html")}')
-    print(f"./TEXT/{WEEKS}/{name}.png")
-    browser.save_screenshot(f"./TEXT/{WEEKS}/{name}.png")
+    print(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
+    browser.save_screenshot(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
 
 
 def crop(name):
-    img = Image.open(f"./TEXT/{WEEKS}/{name}.png")
+    img = Image.open(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
     x, y = img.size
     i = 0
     while i <= x:
@@ -80,14 +91,21 @@ def crop(name):
     #     j -= 1
     # img = img.crop((i, 0) + (x, j))
     img = img.crop((i, 0) + (x, y))
-    img.save(f"./TEXT/{WEEKS}/{name}.png")
+    img.save(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
 
 
 def main():
-    text_font = abspath("./FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
-    emoji_font = abspath("./FONT/Noto Emoji.ttf").replace("\\", "/")
-
     this = json.load(open(f"./DATA/{WEEKS:03d}期数据.json", "r", encoding="utf-8"))
+    list(
+        map(
+            downcover,
+            [
+                (x["rank"], x["av"], x["cover"])
+                for x in this
+                if (x["rank"] > 20 and x["rank"] <= 100)
+            ],
+        )
+    )
     for x in this:
         if x["rank"] >= 21:
             text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 25)
@@ -100,9 +118,6 @@ def main():
 
 
 def pickup():
-    text_font = abspath("./FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
-    emoji_font = abspath("./FONT/Noto Emoji.ttf").replace("\\", "/")
-
     this = json.load(open("./pickup.json", "r", encoding="utf-8"))
     for x in this:
         text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 35)
@@ -113,6 +128,8 @@ def pickup():
 
 
 if __name__ == "__main__":
+    makedirs(f"./FOOTAGE/No.{WEEKS}/COVER", exist_ok=True)
+    makedirs(f"./FOOTAGE/No.{WEEKS}/TEXT", exist_ok=True)
     if len(sys.argv) > 1 and sys.argv[1] == "pickup":
         pickup()
     else:
