@@ -197,7 +197,11 @@ function Main {
     $RankVideos = @()
     $ExistVideos = @()
     Get-ChildItem "$($DownloadFolder)/*.mp4" | ForEach-Object { $ExistVideos += $_.BaseName }
-    Get-Content "$($TruePath)/$($RankNum)_rankdoor.csv" | ForEach-Object { $RankVideos += $_.Split(',')[1] }
+    Get-Content "$($TruePath)/DATA/$($RankNum)期数据.json" | ConvertFrom-Json | Where-Object {
+        $_.rank -le 20 
+    } | Select-Object -ExpandProperty av | ForEach-Object {
+        $RankVideos += "av$($_)"
+    }
     $NeedVideos = $RankVideos | Where-Object { $ExistVideos -notcontains $_ }
     $OldVideos = $ExistVideos | Where-Object { $RankVideos -notcontains $_ }
     $RankVideos | Where-Object { $ExistVideos -contains $_ } | ForEach-Object {
