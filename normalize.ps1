@@ -16,17 +16,6 @@ function Normailze {
         [parameter(position = 2)]$Offset,
         [parameter(position = 3)]$Length
     )
-    if ($LostVideos -contains $FileName) {
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - $($FileName) 视频已失效，生成占位视频"
-        $FakeArg = -join @(
-            '-n -hide_banner -t 40 -f lavfi -i anullsrc -f lavfi '
-            '-i color=size=1280x720:duration=60:rate=30:color=AntiqueWhite '
-            "-vf drawtext=fontfile=MiSans-Medium.ttf:fontsize=147:fontcolor=white:x=(w-text_w)/2:y=(h-text_h)/2:text='$($FileName)' "
-            "$($FootageFolder)/$($FileName).mp4"
-        )
-        Start-Process -NoNewWindow -Wait -FilePath 'ffmpeg.exe' -ArgumentList $FakeArg
-        return $null
-    }
     $Target = 'loudnorm=I=-23.0:LRA=+7.0:tp=-1.0'
     $Length = $Length + 5
     $AudioArg = "-y -hide_banner -ss $($Offset) -t $($Length) -i $($DownloadFolder)/$($FileName).mp4 -af $($Target):print_format=json -f null -"
