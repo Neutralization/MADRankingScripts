@@ -42,13 +42,9 @@ def readjson(week):
 def main():
     print(SNum, ENum)
     data = reduce(list.__add__, map(readjson, range(SNum, ENum + 1)))
-
-    with open("./psdownload/download.txt", "w", encoding="utf-8") as f:
-        f.writelines([f"av{x['av']}\n" for x in data])
-
     json.dump(
         sorted(data, key=lambda z: z["rank"]),
-        open("pickup.json", "w", encoding="utf-8"),
+        open("./DATA/pickup.json", "w", encoding="utf-8"),
         ensure_ascii=False,
         indent=4,
     )
