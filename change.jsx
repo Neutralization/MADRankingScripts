@@ -204,7 +204,7 @@ for (i = 19; i >= 0; i--) {
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
-    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
+    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
 
     if (i + 1 < 4) {
         UICompName = 'UI-TOP' + (i + 1);
@@ -311,7 +311,7 @@ for (i = 100; i < 106; i++) {
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
-    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
+    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     // VideoLayer.startTime = 0 - AllData[i].offset;
@@ -407,7 +407,7 @@ for (i = 1; i <= 16; i++) {
         Index = 19 + (i - 1) * 5 + l;
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[Index].rank + '_TEXT']], 6);
         OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
-        STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 129 + (l - 1) * 142]);
+        STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 29 + OrigSize.height / 2 + (l - 1) * 142]);
         STitleImgLayer.outPoint = SUBComp.layer(2).outPoint;
         STitleImgLayer.mask.addProperty('Mask');
         STitleImgLayer.mask(1).maskMode = MaskMode.ADD;
@@ -416,7 +416,7 @@ for (i = 1; i <= 16; i++) {
             'x=thisLayer.width>865?865:thisLayer.width;mask(1).maskPath=createPath(points=[[0,0],[x,0],[x,thisLayer.height],[0,thisLayer.height]],inTangents=[],outTangents=[],is_closed=true);';
         CoverName = AllData[Index].rank + '_av' + AllData[Index].av;
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
-        CoverLayer.property('Position').setValue([1176.5, 95 + (l - 1) * 142]);
+        CoverLayer.property('Position').setValue([1175, 95 + (l - 1) * 142]);
         CoverLayer.outPoint = SUBComp.layer(2).outPoint;
         OrigSize = CoverLayer.sourceRectAtTime(CoverLayer.inPoint, false);
         if (OrigSize.width / OrigSize.height >= CoverSize[0] / CoverSize[1]) {
