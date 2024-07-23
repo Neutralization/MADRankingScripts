@@ -207,7 +207,11 @@ def main():
     last_rank, last_offset = lastrank()
     for x in this:
         x["last"] = last_rank.get(x["av"]) if last_rank.get(x["av"]) else "null"
-        x["offset"] = last_offset.get(x["av"])[-1] if last_offset.get(x["av"]) else 0
+        x["offset"] = (
+            x["offset"]
+            if x["offset"]
+            else last_offset.get(x["av"])[-1] if last_offset.get(x["av"]) else 0
+        )
     this += pickup()
     rankdoor(this)
     json.dump(
