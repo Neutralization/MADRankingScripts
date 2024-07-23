@@ -428,4 +428,16 @@ for (i = 1; i <= 16; i++) {
     }
 }
 app.endUndoGroup();
+
+renderQueue = app.project.renderQueue;
+render = renderQueue.items.add(CoverComp169);
+render.outputModules[1].applyTemplate('Cover');
+render.outputModules[1].file = new File('./封面_169_[#].jpg');
+render = renderQueue.items.add(CoverComp43);
+render.outputModules[1].applyTemplate('Cover');
+render.outputModules[1].file = new File('./封面_43_[#].jpg');
+render = renderQueue.items.add(app.project.items[ResourceID['周刊MAD排行榜']]);
+render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].file = new File('./周刊MAD排行榜No.' + WEEK_NUM + '.mp4');
+
 app.project.save(File('./MAD_' + WEEK_NUM + '.aep'));
