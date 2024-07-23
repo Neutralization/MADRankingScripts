@@ -212,7 +212,7 @@ for (i = 19; i >= 0; i--) {
     }
     MatteLayer = UIComp.layer(36);
     VideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
-    delay = 0;
+    delay = 0.5;
     if (i + 1 < 4) {
         delay = 1 + 7 / CompFPS;
         FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 80);
@@ -310,7 +310,7 @@ for (i = 100; i < 106; i++) {
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     // VideoLayer.startTime = 0 - AllData[i].offset;
-    VideoLayer.startTime = 0;
+    VideoLayer.startTime = 0.5;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
     VideoLayer.moveAfter(MatteLayer);
