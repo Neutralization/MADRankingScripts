@@ -409,6 +409,11 @@ for (i = 1; i <= 16; i++) {
         OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
         STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 129 + (l - 1) * 142]);
         STitleImgLayer.outPoint = SUBComp.layer(2).outPoint;
+        STitleImgLayer.mask.addProperty('Mask');
+        STitleImgLayer.mask(1).maskMode = MaskMode.ADD;
+        STitleImgLayer.mask(1).inverted = false;
+        STitleImgLayer.mask(1).property(1).expression =
+            'x=thisLayer.width>865?865:thisLayer.width;mask(1).maskPath=createPath(points=[[0,0],[x,0],[x,thisLayer.height],[0,thisLayer.height]],inTangents=[],outTangents=[],is_closed=true);';
         CoverName = AllData[Index].rank + '_av' + AllData[Index].av;
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
         CoverLayer.property('Position').setValue([1176.5, 95 + (l - 1) * 142]);
@@ -416,15 +421,20 @@ for (i = 1; i <= 16; i++) {
         OrigSize = CoverLayer.sourceRectAtTime(CoverLayer.inPoint, false);
         if (OrigSize.width / OrigSize.height >= CoverSize[0] / CoverSize[1]) {
             CoverLayer.property('Scale').setValue([
-                (CoverSize[0] / OrigSize.width) * 100,
-                (CoverSize[0] / OrigSize.width) * 100,
+                (CoverSize[1] / OrigSize.height) * 100,
+                (CoverSize[1] / OrigSize.height) * 100,
             ]);
         } else {
             CoverLayer.property('Scale').setValue([
-                (CoverSize[1] / OrigSize.height) * 100,
-                (CoverSize[1] / OrigSize.height) * 100,
+                (CoverSize[0] / OrigSize.width) * 100,
+                (CoverSize[0] / OrigSize.width) * 100,
             ]);
         }
+        CoverLayer.mask.addProperty('Mask');
+        CoverLayer.mask(1).maskMode = MaskMode.ADD;
+        CoverLayer.mask(1).inverted = false;
+        CoverLayer.mask(1).property(1).expression =
+            'if(thisLayer.width/thisLayer.height>=16/10){y1=0;y2=thisLayer.height;x1=(thisLayer.width-thisLayer.height/10*16)/2;x2=x1+thisLayer.height/10*16;}else{x1=0;x2=thisLayer.width;y1=(thisLayer.height-thisLayer.width/16*10)/2;y2=y1+thisLayer.width/16*10;}mask(1).maskPath=createPath(points=[[x1,y1],[x2,y1],[x2,y2],[x1,y2]],inTangents=[],outTangents=[],is_closed=true);';
     }
 }
 app.endUndoGroup();
