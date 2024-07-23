@@ -158,6 +158,11 @@ for (i = 19; i >= 0; i--) {
     TEXTComp.layer(16).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
     // ID
     TEXTComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
+    if (AllData[i].av >= 10000000000) {
+        TEXTComp.layer(1).property('Position').setValue([767.5, 361.5]);
+        TEXTComp.layer(16).property('Position').setValue([589, 656.4]);
+    }
+
     // 上周排名
     TEXTComp.layer(11).property('Source Text').expression = 'text.sourceText="' + AllData[i].last + '";';
     // NEW
