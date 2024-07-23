@@ -85,26 +85,24 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-for (i = 0; i < 20; i++) {
-    FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
-    FootageFile = new ImportOptions(File(FileFullPath));
-    FootageFile.ImportAs = ImportAsType.FOOTAGE;
-    FileItem = app.project.importFile(FootageFile);
-    FileItem.name = AllData[i].av;
-    FileItem.parentFolder = VideoFolder;
-}
-
-for (i = 20; i < 100; i++) {
-    FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/COVER/' + AllData[i].rank + '_av' + AllData[i].av + '.jpg';
-    FootageFile = new ImportOptions(File(FileFullPath));
-    FootageFile.ImportAs = ImportAsType.FOOTAGE;
-    FileItem = app.project.importFile(FootageFile);
-    FileItem.name = AllData[i].rank + '_av' + AllData[i].av;
-    FileItem.parentFolder = CoverFolder;
-}
-
 for (i = 0; i < 106; i++) {
     if (AllData[i] != undefined) {
+        if (AllData[i].rank <= 20) {
+            FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
+        } else {
+            FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/COVER/' + AllData[i].rank + '_av' + AllData[i].av + '.jpg';
+        }
+        FootageFile = new ImportOptions(File(FileFullPath));
+        FootageFile.ImportAs = ImportAsType.FOOTAGE;
+        FileItem = app.project.importFile(FootageFile);
+        if (AllData[i].rank <= 20) {
+            FileItem.name = AllData[i].av;
+            FileItem.parentFolder = VideoFolder;
+        } else {
+            FileItem.name = AllData[i].rank + '_av' + AllData[i].av;
+            FileItem.parentFolder = CoverFolder;
+        }
+        // TEXT
         FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/TEXT/' + AllData[i].rank + '_av' + AllData[i].av + '.png';
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
@@ -113,23 +111,6 @@ for (i = 0; i < 106; i++) {
         FileItem.parentFolder = TextFolder;
     }
 }
-
-for (i = 100; i < 106; i++) {
-    if (AllData[i] != undefined) {
-        FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
-        FootageFile = new ImportOptions(File(FileFullPath));
-        FootageFile.ImportAs = ImportAsType.FOOTAGE;
-        FileItem = app.project.importFile(FootageFile);
-        FileItem.name = AllData[i].av;
-        FileItem.parentFolder = VideoFolder;
-    }
-}
-
-// watermark = new ImportOptions(File('./FOOTAGE/WaterMark.png'));
-// watermark.ImportAs = ImportAsType.FOOTAGE;
-// water = app.project.importFile(watermark);
-// water.name = 'WaterMark';
-// water.parentFolder = WeeklyFolder;
 
 ResourceID = {};
 for (n = 1; n <= app.project.items.length; n++) {
