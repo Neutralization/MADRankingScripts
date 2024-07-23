@@ -34,6 +34,20 @@ def main(bvid):
     aid = result["data"]["aid"]
     cid = result["data"]["pages"][0]["cid"]
 
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Origin": "https://www.bilibili.com",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Referer": "https://www.bilibili.com/",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+    }
+
     stampdata = {
         "aid": aid,
         "cid": cid,
@@ -43,7 +57,7 @@ def main(bvid):
         "csrf": session.cookies._cookies[".bilibili.com"]["/"]["bili_jct"].value,
     }
     response = session.post(
-        "https://member.bilibili.com/x/web/card/submit", data=stampdata
+        "https://member.bilibili.com/x/web/card/submit", headers=headers, data=stampdata
     )
     print(json.loads(response.content))
 
