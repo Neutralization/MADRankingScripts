@@ -134,8 +134,10 @@ for (n = 1; n <= app.project.items.length; n++) {
     ResourceID[app.project.items[n].name] = n;
 }
 
-CoverComp = app.project.items[ResourceID['周刊MAD排行榜-封面']];
-CoverComp.layer(1).property('Source Text').expression = 'text.sourceText=' + WEEK_NUM + ';';
+CoverComp43 = app.project.items[ResourceID['封面-4/3']];
+CoverComp43.layer(1).property('Source Text').expression = 'text.sourceText=' + WEEK_NUM + ';';
+CoverComp169 = app.project.items[ResourceID['封面-16/9']];
+CoverComp169.layer(1).property('Source Text').expression = 'text.sourceText=' + WEEK_NUM + ';';
 
 OPComp = app.project.items[ResourceID.OP];
 OPComp.layer(8).property('Source Text').expression = 'text.sourceText="No.' + WEEK_NUM + '";';
