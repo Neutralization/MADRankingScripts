@@ -35,6 +35,7 @@ def downcover(data):
     except requests.exceptions.MissingSchema:
         print(f"requests.exceptions.MissingSchema: av{aid}\n")
         return None
+    print(f"./FOOTAGE/No.{WEEKS}/COVER/{rank}_av{aid}.jpg")
     with open(f"./FOOTAGE/No.{WEEKS}/COVER/{rank}_av{aid}.jpg", "wb") as f:
         f.write(response.content)
 
