@@ -251,7 +251,7 @@ for (i = 19; i >= 0; i--) {
         }
         FullVideoLayer.property('Position').setValue([CompSize[0] / 2, CompSize[1] / 2]);
         TrueDuration = app.project.items[ResourceID[AllData[i].av]].duration;
-        if (UIComp.duration < TrueDuration){
+        if (UIComp.duration < TrueDuration) {
             TrueDuration = UIComp.duration;
         }
         FullVideoLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20 - 1 / CompFPS, 0);
