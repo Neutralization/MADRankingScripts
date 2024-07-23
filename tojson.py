@@ -26,10 +26,10 @@ def getinfo(aid):
         print(f"av{aid} 封面获取失败：{result}")
     return {
         aid: {
-            "title": None if code else result["data"].get("title"),
-            "duration": None if code else result["data"].get("duration"),
-            "owner": None if code else result["data"]["owner"].get("name"),
-            "pic": None if code else result["data"].get("pic"),
+            "title": "" if code else result["data"].get("title"),
+            "duration": 0 if code else result["data"].get("duration"),
+            "owner": "" if code else result["data"]["owner"].get("name"),
+            "pic": "" if code else result["data"].get("pic"),
             "pubdate": (
                 None
                 if code
@@ -44,7 +44,7 @@ def getinfo(aid):
 def readExcel(filename):
     print(f"\n加载文件\n\t{filename}")
     df = read_excel(filename)
-    for extra_col in ("last", "cover", "duration", "pubdate", "offset"):
+    for extra_col in ("offset", "last", "duration", "cover", "pubdate"):
         if extra_col in df.columns:
             pass
         else:
