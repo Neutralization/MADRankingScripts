@@ -14,7 +14,7 @@ from tojson import WEEKS
 browser_options = Options()
 browser_options.add_argument("headless")
 browser = Edge(options=browser_options)
-browser.set_window_size(1100, 200)
+browser.set_window_size(1100, 100)
 command = f"/session/{browser.session_id}/chromium/send_command_and_get_result"
 url = browser.command_executor._url + command
 data = json.dumps(
@@ -82,16 +82,20 @@ def crop(name):
     x, y = img.size
     i = 0
     while i <= x:
-        if sum([img.getpixel((i, j))[-1] for j in range(y)]) != 0:
+        if sum([img.getpixel((i, z))[-1] for z in range(y)]) != 0:
             break
         i += 1
-    # j = y - 1
-    # while j >= 0:
-    #     if sum([img.getpixel((i, j))[-1] for i in range(x)]) != 0:
-    #         break
-    #     j -= 1
-    # img = img.crop((i, 0) + (x, j))
-    img = img.crop((i, 0) + (x, y))
+    j = x - 1
+    while j >= 0:
+        if sum([img.getpixel((j, z))[-1] for z in range(y)]) != 0:
+            break
+        j -= 1
+    k = y - 1
+    while k >= 0:
+        if sum([img.getpixel((z, k))[-1] for z in range(x)]) != 0:
+            break
+        k -= 1
+    img = img.crop((i, 0) + (j, k))
     img.save(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
 
 
