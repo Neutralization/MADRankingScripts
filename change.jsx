@@ -1,4 +1,6 @@
 // @include 'json2/json2.js';
+app.project.workingSpace = 'Rec.709 Gamma 2.4';
+app.project.bitsPerChannel = 8;
 
 WEEK_NUM = Math.floor((Date.now() / 1000 - 1428681600) / 3600 / 24 / 7);
 
