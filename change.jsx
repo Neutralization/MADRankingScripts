@@ -308,6 +308,13 @@ for (i = 100; i < 106; i++) {
     // 推荐语
     TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
     TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
+    if (AllData[i].av >= 10000000000) {
+        TEXTComp.layer(4).property('Position').setValue([767.5, 361.5]);
+        TEXTComp.layer(18).property('Position').setValue([589, 656.4]);
+    } else {
+        TEXTComp.layer(4).property('Position').setValue([667.5, 361.5]);
+        TEXTComp.layer(18).property('Position').setValue([489, 656.4]);
+    }
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
