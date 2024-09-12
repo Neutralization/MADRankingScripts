@@ -6,15 +6,16 @@ from os.path import abspath
 import sys
 import requests
 from PIL import Image
-from selenium.webdriver import Edge
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 
 from tojson import WEEKS
 
 browser_options = Options()
 browser_options.add_argument("headless")
-browser = Edge(options=browser_options)
-browser.set_window_size(1100, 100)
+browser_options.add_argument("disable-infobars")
+browser = Chrome(options=browser_options)
+browser.set_window_size(1100, 200)
 command = f"/session/{browser.session_id}/chromium/send_command_and_get_result"
 url = browser.command_executor._url + command
 data = json.dumps(
