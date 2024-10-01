@@ -26,8 +26,8 @@ data = json.dumps(
     }
 )
 browser.command_executor._request("POST", url, data)
-text_font = abspath("./FOOTAGE/FONT/Hiragino Sans GB W3.otf").replace("\\", "/")
-emoji_font = abspath("./FOOTAGE/FONT/Noto Emoji.ttf").replace("\\", "/")
+text_font = abspath("./FOOTAGE/FONT/Hiragino Sans GB W3_[HiraginoSansGB-W3].otf")
+emoji_font = abspath("./FOOTAGE/FONT/Noto Emoji_[NotoEmoji-Regular].ttf")
 
 
 def downcover(data):
