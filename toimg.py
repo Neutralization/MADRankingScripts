@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import json
-from os import remove, makedirs
-from os.path import abspath
 import sys
+from os import makedirs, remove
+from os.path import abspath
+
 import requests
 from PIL import Image
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 
 from tojson import WEEKS
 
@@ -16,7 +19,9 @@ browser_options.add_argument("--headless")
 browser_options.add_argument("--disable-infobars")
 browser_options.add_argument("--window-size=1100,200")
 browser_options.add_argument("--window-position=-2400,-2400")
-browser = Chrome(options=browser_options)
+browser = Chrome(
+    service=ChromeService(ChromeDriverManager().install()), options=browser_options
+)
 command = f"/session/{browser.session_id}/chromium/send_command_and_get_result"
 url = browser.command_executor._url + command
 data = json.dumps(
