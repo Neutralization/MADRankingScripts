@@ -7,7 +7,7 @@ $DataFolder = "$($TruePath)/DATA"
 $DownloadFolder = "$($TruePath)/FOOTAGE/VIDEO"
 $FootageFolder = "$($TruePath)/FOOTAGE/No.$($RankNum)/VIDEO"
 
-if (Test-Path -Path 'C:/Windows/System32/nvcuvid.dll') { $Nvdia = $true } else { $Nvdia = $false }
+if ((WMIC PATH Win32_VideoController Get Name) -match 'NVIDIA') { $Nvdia = $true } else { $Nvdia = $false }
 if ((WMIC CPU Get Name) -match 'Intel') { $Intel = $true } else { $Intel = $false }
 
 function Normailze {
