@@ -1,4 +1,6 @@
 // @include 'json2/json2.js';
+app.project.workingSpace = 'Rec.709 Gamma 2.4';
+app.project.bitsPerChannel = 8;
 
 WEEK_NUM = Math.floor((Date.now() / 1000 - 1428681600) / 3600 / 24 / 7);
 
@@ -9,7 +11,7 @@ for (n = 1; n <= app.project.items.length; n++) {
     }
 }
 
-file = new File('pickup.json');
+file = new File('./DATA/pickup.json');
 file.open('r');
 content = file.read();
 file.close();
@@ -26,11 +28,11 @@ compname = '周刊MAD排行榜推荐合集' + sdate.getFullYear() + '.' + (sdate
 OldPickupComp = app.project.items.addComp(compname + '—旧作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
 NewPickupComp = app.project.items.addComp(compname + '—新作', CompSize[0], CompSize[1], 1, 6 + 1 / 3, CompFPS);
 
-WeeklyFolder = app.project.items.addFolder('No.' + WEEK_NUM);
+WeeklyFolder = app.project.items.addFolder('No.pickup');
 
 for (i = 0; i < AllData.length; i++) {
     if (AllData[i] != undefined) {
-        FileFullPath = './TEXT/' + AllData[i].rank + '_av' + AllData[i].av + '.png';
+        FileFullPath = './FOOTAGE/No.pickup/TEXT/' + AllData[i].rank + '_av' + AllData[i].av + '.png';
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
@@ -41,7 +43,7 @@ for (i = 0; i < AllData.length; i++) {
 
 for (i = 0; i < AllData.length; i++) {
     if (AllData[i] != undefined) {
-        FileFullPath = './VIDEO/av' + AllData[i].av + '.mp4';
+        FileFullPath = './FOOTAGE/No.' + parseInt(AllData[i].rank / 10) + '/VIDEO/av' + AllData[i].av + '.mp4';
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
@@ -142,19 +144,26 @@ for (i = 0; i < AllData.length; i++) {
     TextComp.layer(3).property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
     TextComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
     TextComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
+    if (AllData[i].av >= 10000000000) {
+        TextComp.layer(4).property('Position').setValue([767.5, 361.5]);
+        TextComp.layer(18).property('Position').setValue([589, 656.4]);
+    } else {
+        TextComp.layer(4).property('Position').setValue([667.5, 361.5]);
+        TextComp.layer(18).property('Position').setValue([489, 656.4]);
+    }
     TitleImgLayer = TextComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
-    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 736]);
+    TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
     MatteLayer = PICKUIComp.layer(38);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     // VideoLayer.startTime = 0 - AllData[i].offset;
-    VideoLayer.startTime = 0;
+    VideoLayer.startTime = 0.5;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
     VideoLayer.moveAfter(MatteLayer);
     VideoLayer.trackMatteType = TrackMatteType.ALPHA;
     OrigSize = VideoLayer.sourceRectAtTime(VideoLayer.inPoint, false);
-    if (OrigSize.width / OrigSize.height >= 16 / 9) {
+    if (OrigSize.width / OrigSize.height >= PartSize[0] / PartSize[1]) {
         VideoLayer.property('Scale').setValue([
             (PartSize[0] / OrigSize.width) * 100,
             (PartSize[0] / OrigSize.width) * 100,
@@ -165,7 +174,7 @@ for (i = 0; i < AllData.length; i++) {
             (PartSize[1] / OrigSize.height) * 100,
         ]);
     }
-    VideoLayer.property('Position').setValue([739, 334]);
+    VideoLayer.property('Position').setValue([738, 327]);
     AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
     AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
     NewLayer = PickupComp.layers.add(PICKUIComp);
@@ -174,3 +183,14 @@ for (i = 0; i < AllData.length; i++) {
     TopLayer.startTime = PickupComp.duration + NewLayer.outPoint - NewLayer.startTime;
     PickupComp.duration += (NewLayer.outPoint - NewLayer.startTime + TopLayer.outPoint - TopLayer.startTime);
 }
+
+app.project.consolidateFootage();
+renderQueue = app.project.renderQueue;
+render = renderQueue.items.add(app.project.items[ResourceID[compname + '—旧作']]);
+render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].file = new File(compname + '—旧作.mp4');
+render = renderQueue.items.add(app.project.items[ResourceID[compname + '—新作']]);
+render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].file = new File(compname + '—新作.mp4');
+
+app.project.save(File(compname + '.aep'));
