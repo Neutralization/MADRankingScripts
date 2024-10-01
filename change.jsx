@@ -295,10 +295,6 @@ for (i = 100; i < 106; i++) {
     PICKUIComp = app.project.items[ResourceID[UIComp]];
     // ID
     TEXTComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
-    // 标题
-    // TEXTComp.layer(19).property('Source Text').expression = 'text.sourceText="' + AllData[i].title + '";';
-    // TEXTComp.layer(19).property('Source Text').expression.enabled = false;
-    // TEXTComp.layer(19).enabled = false;
     // UP主
     TEXTComp.layer(18).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
     // 日期
@@ -315,7 +311,7 @@ for (i = 100; i < 106; i++) {
         TEXTComp.layer(4).property('Position').setValue([667.5, 361.5]);
         TEXTComp.layer(18).property('Position').setValue([489, 656.4]);
     }
-
+    // 标题
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
@@ -342,7 +338,6 @@ for (i = 100; i < 106; i++) {
     VideoLayer.property('Position').setValue([738, 327]);
     AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
     AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
-
 }
 
 for (i = 1; i < 4; i++) {
@@ -363,10 +358,6 @@ for (i = 1; i <= 16; i++) {
         SUBComp.layer(l + 5).property('Source Text').expression = 'text.sourceText="' + AllData[Index].pubdate + '";';
         // 排名
         SUBComp.layer(l + 10).property('Source Text').expression = 'text.sourceText="' + AllData[Index].rank + '";';
-        // 标题
-        // SUBComp.layer(l + 15).property('Source Text').expression = 'text.sourceText=\'' + AllData[Index].title + '\';';
-        // SUBComp.layer(l + 15).property('Source Text').expression.enabled = false;
-        // SUBComp.layer(l + 15).enabled = false;
         // UP
         SUBComp.layer(l + 20).property('Source Text').expression = 'text.sourceText="' + AllData[Index].up + '";';
         // 总分
@@ -412,6 +403,7 @@ for (i = 1; i <= 16; i++) {
     }
     for (l = 1; l <= 5; l++) {
         Index = 19 + (i - 1) * 5 + l;
+        // 标题
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[Index].rank + '_TEXT']], 6);
         OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
         STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 29 + OrigSize.height / 2 + (l - 1) * 142]);
@@ -446,6 +438,7 @@ for (i = 1; i <= 16; i++) {
 }
 app.endUndoGroup();
 
+app.project.consolidateFootage();
 renderQueue = app.project.renderQueue;
 render = renderQueue.items.add(CoverComp169);
 render.outputModules[1].applyTemplate('Cover');
