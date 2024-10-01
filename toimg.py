@@ -35,6 +35,10 @@ text_font = abspath("./FOOTAGE/FONT/Hiragino Sans GB W3_[HiraginoSansGB-W3].otf"
 emoji_font = abspath("./FOOTAGE/FONT/Noto Emoji_[NotoEmoji-Regular].ttf")
 
 
+def folder():
+    return "pickup" if len(sys.argv) > 1 and sys.argv[1] == "pickup" else WEEKS
+
+
 def downcover(data):
     rank, aid, link = data
     try:
@@ -80,12 +84,12 @@ def text2img(name, text, font, emoji, size):
         f.write(html_content)
 
     browser.get(f'file://{abspath("TEXT.html")}')
-    print(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
-    browser.save_screenshot(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
+    print(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
+    browser.save_screenshot(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
 
 
 def crop(name):
-    img = Image.open(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
+    img = Image.open(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
     x, y = img.size
     i = 0
     while i <= x:
@@ -103,7 +107,7 @@ def crop(name):
             break
         k -= 1
     img = img.crop((i, 0) + (j, k))
-    img.save(f"./FOOTAGE/No.{WEEKS}/TEXT/{name}.png")
+    img.save(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
 
 
 def main():
@@ -130,7 +134,7 @@ def main():
 
 
 def pickup():
-    this = json.load(open("./pickup.json", "r", encoding="utf-8"))
+    this = json.load(open("./DATA/pickup.json", "r", encoding="utf-8"))
     for x in this:
         text2img(f"{x['rank']}_av{x['av']}", x["title"], text_font, emoji_font, 35)
         crop(f"{x['rank']}_av{x['av']}")
@@ -143,6 +147,7 @@ if __name__ == "__main__":
     makedirs(f"./FOOTAGE/No.{WEEKS}/COVER", exist_ok=True)
     makedirs(f"./FOOTAGE/No.{WEEKS}/TEXT", exist_ok=True)
     if len(sys.argv) > 1 and sys.argv[1] == "pickup":
+        makedirs("./FOOTAGE/No.pickup/TEXT", exist_ok=True)
         pickup()
     else:
         main()
