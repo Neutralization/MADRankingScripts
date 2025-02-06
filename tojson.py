@@ -167,7 +167,7 @@ def lastrank():
     rankdata = {
         x["av"]: x["rank"]
         for x in json.load(
-            open(f"./DATA/{WEEKS-1:03d}期数据.json", "r", encoding="utf-8")
+            open(f"./DATA/{WEEKS - 1:03d}期数据.json", "r", encoding="utf-8")
         )
         if (x["rank"] > 0 and x["rank"] <= 100)
     }
