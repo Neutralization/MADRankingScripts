@@ -1,4 +1,5 @@
 // @include 'json2/json2.js';
+app.project.expressionEngine = 'extendscript';
 app.project.workingSpace = 'Rec.709 Gamma 2.4';
 app.project.bitsPerChannel = 8;
 
@@ -223,7 +224,7 @@ for (i = 19; i >= 0; i--) {
         FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 80);
         // FullVideoLayer.startTime = 0 - AllData[i].offset + delay;
         FullVideoLayer.startTime = 0 + delay;
-        FullVideoLayer.inPoint = 1;
+        FullVideoLayer.inPoint = 0 + delay;
         FullVideoLayer.outPoint = 72 + delay;
         OrigSize = FullVideoLayer.sourceRectAtTime(FullVideoLayer.inPoint, false);
         if (OrigSize.width / OrigSize.height >= CompSize[0] / CompSize[1]) {
@@ -441,13 +442,13 @@ app.endUndoGroup();
 app.project.consolidateFootage();
 renderQueue = app.project.renderQueue;
 render = renderQueue.items.add(CoverComp169);
-render.outputModules[1].applyTemplate('Cover');
+render.outputModules[1].applyTemplate('带有 Alpha 的 TIFF 序列 ');
 render.outputModules[1].file = new File('./封面_169_[#].jpg');
 render = renderQueue.items.add(CoverComp43);
-render.outputModules[1].applyTemplate('Cover');
+render.outputModules[1].applyTemplate('带有 Alpha 的 TIFF 序列 ');
 render.outputModules[1].file = new File('./封面_43_[#].jpg');
 render = renderQueue.items.add(app.project.items[ResourceID['周刊MAD排行榜']]);
-render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].applyTemplate('H.264 - 匹配渲染设置 - 5 Mbps');
 render.outputModules[1].file = new File('./周刊MAD排行榜No.' + WEEK_NUM + '.mp4');
 
 app.project.save(File('./MAD_' + WEEK_NUM + '.aep'));
