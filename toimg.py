@@ -22,15 +22,10 @@ browser_options.add_argument("--window-position=-2400,-2400")
 browser = Chrome(
     service=ChromeService(ChromeDriverManager().install()), options=browser_options
 )
-command = f"/session/{browser.session_id}/chromium/send_command_and_get_result"
-url = browser.command_executor._url + command
-data = json.dumps(
-    {
-        "cmd": "Emulation.setDefaultBackgroundColorOverride",
-        "params": {"color": {"r": 0, "g": 0, "b": 0, "a": 0}},
-    }
+browser.execute_cdp_cmd(
+    "Emulation.setDefaultBackgroundColorOverride",
+    {"color": {"r": 0, "g": 0, "b": 0, "a": 0}},
 )
-browser.command_executor._request("POST", url, data)
 text_font = abspath("./FOOTAGE/FONT/Hiragino Sans GB W3_[HiraginoSansGB-W3].otf")
 emoji_font = abspath("./FOOTAGE/FONT/Noto Emoji_[NotoEmoji-Regular].ttf")
 
