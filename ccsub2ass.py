@@ -31,7 +31,7 @@ def toASS(filename):
         linecount = len(line["content"].split("\n")) - 1
         for n, content in enumerate(line["content"].split("\n")):
             assdata.append(
-                f"Dialogue: 0,{SectoTime(line['from'])},{SectoTime(line['to'])},Default,,0,0,{(linecount-n)*75+35},,{content}\n"
+                f"Dialogue: 0,{SectoTime(line['from'])},{SectoTime(line['to'])},Default,,0,0,{(linecount - n) * 75 + 35},,{content}\n"
             )
     return assdata
 

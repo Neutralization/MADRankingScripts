@@ -210,7 +210,9 @@ def main():
         x["offset"] = (
             x["offset"]
             if x["offset"]
-            else last_offset.get(x["av"])[-1] if last_offset.get(x["av"]) else 0
+            else last_offset.get(x["av"])[-1]
+            if last_offset.get(x["av"])
+            else 0
         )
     this += pickup()
     rankdoor(this)

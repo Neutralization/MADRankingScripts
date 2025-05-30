@@ -9,7 +9,7 @@ import arrow
 
 Season = (int(arrow.now("Asia/Shanghai").format("M")) - 1) // 3 * 3 + 1  # 1 4 7 10
 EDay = arrow.get(
-    f'{arrow.now("Asia/Shanghai").format("YYYY")}-{Season}-1 00:00:00 +0800',
+    f"{arrow.now('Asia/Shanghai').format('YYYY')}-{Season}-1 00:00:00 +0800",
     "YYYY-M-D HH:mm:ss Z",
 )
 SDay = EDay.shift(months=-3)

@@ -78,7 +78,7 @@ def text2img(name, text, font, emoji, size):
     with open("TEXT.html", "w", encoding="utf-8-sig") as f:
         f.write(html_content)
 
-    browser.get(f'file://{abspath("TEXT.html")}')
+    browser.get(f"file://{abspath('TEXT.html')}")
     print(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
     browser.save_screenshot(f"./FOOTAGE/No.{folder()}/TEXT/{name}.png")
 

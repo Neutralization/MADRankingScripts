@@ -37,9 +37,9 @@ if __name__ == "__main__":
     new = False
     for file in range(42):
         if not old:
-            old = search(f"{sys.argv[1]}_{file+1:0>3}", "old")
+            old = search(f"{sys.argv[1]}_{file + 1:0>3}", "old")
         if not new:
-            new = search(f"{sys.argv[1]}_{file+1:0>3}", "new")
+            new = search(f"{sys.argv[1]}_{file + 1:0>3}", "new")
     checklist = [
         file
         for file in os.listdir("./VIDEO/")
@@ -61,4 +61,4 @@ if __name__ == "__main__":
         else:
             start += 1
     for file in range(42):
-        os.remove(f"./VIDEO/{sys.argv[1]}_{file+1:0>3}.jpg")
+        os.remove(f"./VIDEO/{sys.argv[1]}_{file + 1:0>3}.jpg")
