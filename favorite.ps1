@@ -373,7 +373,7 @@ function Main {
         Add-Favourite $FIDData['MAD 旧作推荐'] $_
     }
     Get-Ranking '新作' | ForEach-Object {
-        Add-Favourite $FIDData['MAD 新作推荐'] $_
+        Add-Favourite $FIDData['MAD 新作推荐 2'] $_
     }
     Set-MasterPiece $SelfAID
     $RankList = Get-RankList
