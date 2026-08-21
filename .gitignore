@@ -1,11 +1,38 @@
+# dev artifacts
+node_modules/
+.venv/
+.ruff_cache/
+.codegraph/
+.omo/
+
+# keep reproducible toolchain files
+!.python-version
+!uv.lock
+!package.json
+!package-lock.json
+!eslint.config.cjs
+!jsconfig.json
+!types/
+!types/**
+
+# vscode: only track project lint/editor contract
+!.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/PSScriptAnalyzerSettings.psd1
+
 DATA/
 FOOTAGE/
-*_AME/
+*AME/
+*自动保存/
+*日志/
 
 *.aep
-*.csv
+*.mp4
+*.png
+*.psd
 *.jpg
-*.js
-*.json
+*.csv
 *.txt
-*.xlsx
