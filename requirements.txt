@@ -1,6 +1,0 @@
-arrow
-openpyxl
-pandas
-pillow
-requests
-selenium
