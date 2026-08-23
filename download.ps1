@@ -1,10 +1,11 @@
-param (
+﻿param (
     [string]$RankNum = [Math]::Floor(((Get-Date).ToFileTime() / 10000000 - 11644473600 - 1428681600) / 3600 / 24 / 7)
 )
 $ProgressPreference = 'SilentlyContinue'
 $TruePath = Split-Path $MyInvocation.MyCommand.Path
-$DownloadFolder = "$($TruePath)/FOOTAGE/VIDEO"
-$CookieFile = "$($TruePath)/bilibili.com_cookies.txt"
+$DownloadFolder = "${TruePath}/FOOTAGE/VIDEO"
+$FootageFolder = "${TruePath}/FOOTAGE/No.${RankNum}/VIDEO"
+$CookieFile = "${TruePath}/bilibili.com_cookies.txt"
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
 
 $Session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -28,18 +29,14 @@ $Headers = @{
 
 function ConvertTo-AID {
     param (
-        [parameter(position = 1)]$Source,
-        [parameter(position = 2)]$Target = $true
+        [string]$Source,
+        [bool]$Reverse = $false
     )
-    # 如何看待 2020 年 3 月 23 日哔哩哔哩将稿件的「av 号」变更为「BV 号」？ - mcfx的回答 - 知乎
-    # https://www.zhihu.com/question/381784377/answer/1099438784
-    #
     # https://github.com/Colerar/abv
     $ALPHABET = 'FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf'.ToCharArray()
     $table = @{}
-    0..57 | ForEach-Object {
-        $table[$ALPHABET[$_]] = $_
-    }
+    0..57 | ForEach-Object { $table[$ALPHABET[$_]] = $_ }
+
     $XOR_CODE = 23442827791579
     $MASK_CODE = 2251799813685247
     $MAX_AID = [Int64]1 -shl 51
@@ -47,41 +44,69 @@ function ConvertTo-AID {
     $BV_LEN = 12
 
     function bv2av {
-        param (
-            [string]$bvid
-        )
-        $bv_list = $bvid.ToCharArray()
-        $bv_list[3], $bv_list[9] = $bv_list[9], $bv_list[3]
-        $bv_list[4], $bv_list[7] = $bv_list[7], $bv_list[4]
-        $tmp = 0
-        foreach ($char in $bv_list[3..$BV_LEN]) {
+        param ([string]$Bvid)
+        $bvList = $Bvid.ToCharArray()
+        $bvList[3], $bvList[9] = $bvList[9], $bvList[3]
+        $bvList[4], $bvList[7] = $bvList[7], $bvList[4]
+        $tmp = [int64]0
+        foreach ($char in $bvList[3..($BV_LEN - 1)]) {
             $idx = $table[$char]
             $tmp = $tmp * $BASE + $idx
         }
-        $avid = ($tmp -band $MASK_CODE) -bxor $XOR_CODE
-        return $avid
+        return ($tmp -band $MASK_CODE) -bxor $XOR_CODE
     }
+
     function av2bv {
-        param (
-            [string]$avid
-        )
-        $bv_list = 'BV1000000000'.ToCharArray()
-        $bv_idx = $BV_LEN - 1
-        $tmp = ($MAX_AID -bor $avid) -bxor $XOR_CODE
+        param ([int64]$Avid)
+        $bvList = 'BV1000000000'.ToCharArray()
+        $bvIdx = $BV_LEN - 1
+        $tmp = ($MAX_AID -bor $Avid) -bxor $XOR_CODE
         while ($tmp -ne 0) {
-            $bv_list[$bv_idx] = $ALPHABET[$tmp % $BASE]
+            $bvList[$bvIdx] = $ALPHABET[$tmp % $BASE]
             $tmp = [Math]::Truncate($tmp / $BASE)
-            $bv_idx -= 1
+            $bvIdx -= 1
         }
-        $bv_list[3], $bv_list[9] = $bv_list[9], $bv_list[3]
-        $bv_list[4], $bv_list[7] = $bv_list[7], $bv_list[4]
-        return -join $bv_list
+        $bvList[3], $bvList[9] = $bvList[9], $bvList[3]
+        $bvList[4], $bvList[7] = $bvList[7], $bvList[4]
+        return -join $bvList
     }
-    if ($Target) {
-        return bv2av $Source
-    } else {
-        return av2bv $Source
-    }
+
+    if ($Reverse) { return av2bv $Source } else { return bv2av $Source }
+}
+
+function Get-Aria2DefaultArgument {
+    return @(
+        '--check-certificate=false',
+        '--console-log-level=notice',
+        '--continue=true',
+        '--download-result=hide',
+        '--enable-color=false',
+        '--file-allocation=none',
+        '--max-concurrent-downloads=20',
+        '--max-connection-per-server=16',
+        '--min-split-size=1M',
+        '--split=12',
+        '--summary-interval=0'
+    )
+}
+
+function Get-Aria2cArgument {
+    param (
+        [string]$SourceUrl,
+        [string]$OutputName,
+        [string]$DownloadFolder,
+        [string]$UserAgent,
+        [string]$Referer
+    )
+
+    return @(
+        Get-Aria2DefaultArgument
+        $SourceUrl
+        "--header=User-Agent: ${UserAgent}"
+        "--header=Referer: ${Referer}"
+        "--dir=${DownloadFolder}"
+        '--out', $OutputName
+    )
 }
 
 function BiliDown {
@@ -92,133 +117,124 @@ function BiliDown {
 
     if ($ID -match '^[aA]') {
         $AID = $ID.Substring(2)
-        $BID = ConvertTo-AID $AID $false
-        $ID = "av$($AID)"
+        $BID = ConvertTo-AID $AID $true
+        $ID = "av${AID}"
     } elseif ($ID -match '^[bB]') {
-        $AID = ConvertTo-AID $ID $true
-        $BID = ConvertTo-AID $AID $false
+        $AID = ConvertTo-AID $ID
+        $BID = ConvertTo-AID $AID $true
         $ID = $BID
     } else {
-        exit
+        return
     }
-    Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 获取 av$($AID) / $($BID)" -ForegroundColor Green
-    $PageList = "https://api.bilibili.com/x/player/pagelist?aid=$($AID)&jsonp=jsonp"
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - API $($PageList)"
-    $Headers.referer = "https://www.bilibili.com/video/av$($AID)/"
-    $Headers.path = "/x/player/pagelist?aid=$($AID)&jsonp=jsonp"
-    $Pages = Invoke-WebRequest -UseBasicParsing -Uri $PageList -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
-    Write-Debug $Pages.data[0]
-    $CID = $Pages.data | Where-Object -Property 'page' -EQ $Part | Select-Object -ExpandProperty 'cid'
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 获取 CID $($CID)"
-    
-    $CCsub = "https://api.bilibili.com/x/player/wbi/v2?aid=$($AID)&cid=$($CID)&isGaiaAvoided=false"
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - API $($CCsub)"
-    $SubData = Invoke-WebRequest -UseBasicParsing -Uri $CCsub -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
-    if ($null -ne $SubData.data.subtitle.subtitles[0].subtitle_url -and $SubData.data.subtitle.subtitles[0].lan_doc -notmatch '自动') {
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 存在 CC 字幕" -ForegroundColor Green
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - Subtitle http:$($SubData.data.subtitle.subtitles[0].subtitle_url)"
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 下载 CC 字幕" -ForegroundColor Green
-        Invoke-WebRequest -Uri "http:$($SubData.data.subtitle.subtitles[0].subtitle_url)" -WebSession $Session -Headers $Headers -OutFile "$($DownloadFolder)/$($CID)_.json"
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 转换 ASS 字幕" -ForegroundColor Green
-        Start-Process -NoNewWindow -Wait -FilePath 'python.exe' -ArgumentList "ccsub2ass.py $($DownloadFolder)/$($CID)_"
-        $CC = $true
-    } else {
-        $CC = $false
+    $pageUrl = "https://api.bilibili.com/x/player/pagelist?aid=${AID}&jsonp=jsonp"
+    $Headers.referer = "https://www.bilibili.com/video/av${AID}/"
+    $Headers.path = "/x/player/pagelist?aid=${AID}&jsonp=jsonp"
+    $pages = Invoke-WebRequest -UseBasicParsing -Uri $pageUrl -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
+    $CID = $pages.data | Where-Object -Property 'page' -EQ $Part | Select-Object -ExpandProperty 'cid'
+
+    $ccUrl = "https://api.bilibili.com/x/player/wbi/v2?aid=${AID}&cid=${CID}&isGaiaAvoided=false"
+    $ccData = Invoke-WebRequest -UseBasicParsing -Uri $ccUrl -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
+    $subtitle = $ccData.data.subtitle.subtitles[0]
+    if ($null -ne $subtitle.subtitle_url -and $subtitle.lan -notmatch 'ai-') {
+        Invoke-WebRequest -Uri "http:$($subtitle.subtitle_url)" -WebSession $Session -Headers $Headers -OutFile "${FootageFolder}/${ID}.json"
     }
 
-    $SourceUrl = "https://api.bilibili.com/x/player/playurl?avid=$($AID)&bvid=$($BID)&cid=$($CID)&qn=120&fnver=0&fnval=4048&fourk=1"
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - API $($SourceUrl)"
-    $Headers.referer = "https://www.bilibili.com/video/av$($AID)/"
-    $Headers.path = "/x/player/playurl?avid=$($AID)&bvid=$($BID)&cid=$($CID)&qn=120&fnver=0&fnval=4048&fourk=1"
-    Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 解析视频链接" -ForegroundColor Green
-    $VideoData = Invoke-WebRequest -UseBasicParsing -Uri $SourceUrl -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - $($VideoData.data)"
-
-    $AudioID = $VideoData.data.dash.audio.id | Measure-Object -Maximum | Select-Object -ExpandProperty 'Maximum'
-    $AudioDASH = $VideoData.data.dash.audio | Where-Object -Property 'id' -EQ $AudioID | Select-Object -ExpandProperty 'baseUrl'
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 音频流 $($AudioID) $($AudioDASH)"
-    $VideoID = $VideoData.data.dash.video.id | Measure-Object -Maximum | Select-Object -ExpandProperty 'Maximum'
-    $Video1080P60 = $VideoData.data.accept_description.IndexOf('高清 1080P60')
-    $Video1080Plus = $VideoData.data.accept_description.IndexOf('高清 1080P+')
-    $Video1080 = $VideoData.data.accept_description.IndexOf('高清 1080P')
-    if ($Video1080P60 -ge 0) {
-        $VideoID = $VideoData.data.accept_quality[$Video1080P60]
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 选择 高清 1080P60"
-    } elseif ($Video1080Plus -ge 0) {
-        $VideoID = $VideoData.data.accept_quality[$Video1080Plus]
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 选择 高清 1080P+"
-    } elseif ($Video1080 -ge 0) {
-        $VideoID = $VideoData.data.accept_quality[$Video1080]
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 选择 高清 1080P"
-    } else {
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 选择最清晰画质"
+    $sourceUrl = "https://api.bilibili.com/pgc/player/web/v2/playurl?avid=${AID}&bvid=${BID}&cid=${CID}&qn=120&fnver=0&fnval=4048&fourk=1"
+    $pgcTest = Invoke-WebRequest -UseBasicParsing -Uri $sourceUrl -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
+    $sourceUrl = if (-404 -eq $pgcTest.code) { "https://api.bilibili.com/x/player/playurl?avid=${AID}&bvid=${BID}&cid=${CID}&qn=120&fnver=0&fnval=4048&fourk=1" } else { $sourceUrl }
+    $Headers.referer = "https://www.bilibili.com/video/av${AID}/"
+    $Headers.path = $sourceUrl.Substring('https://api.bilibili.com'.Length)
+    $videoInfo = Invoke-WebRequest -UseBasicParsing -Uri $sourceUrl -WebSession $Session -Headers $Headers | Select-Object -ExpandProperty 'Content' | ConvertFrom-Json
+    $videoData = if (-404 -eq $pgcTest.code) { $videoInfo.data } else { $videoInfo.result.video_info }
+    if ($null -eq $videoData) {
+        [Console]::Out.WriteLine("$($PSStyle.Foreground.Red)$(Get-Date -Format 'MM/dd HH:mm:ss') - ${ID} 解析失败，跳过$($PSStyle.Reset)")
+        return
     }
-    $VideoDASH = $VideoData.data.dash.video | Where-Object -Property 'id' -EQ $VideoID | Where-Object -Property 'codecs' -Match 'avc' | Select-Object -ExpandProperty 'baseUrl'
-    Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - 视频流 $($VideoID) $($VideoDASH)"
+
+    # 充电专属视频 / 非 DASH 视频
+    if ($null -ne $videoData.durl) {
+        $singleMp4 = $videoData.durl | Where-Object -Property 'order' -EQ 1 | Select-Object -ExpandProperty 'url'
+        try {
+            $aria2cArgs = Get-Aria2cArgument -SourceUrl $singleMp4 -OutputName "${ID}.mp4" -DownloadFolder "${DownloadFolder}" -UserAgent $UserAgent -Referer $Headers.referer
+            & aria2c.exe @aria2cArgs 1>> "${DownloadFolder}/${ID}_.log"
+        } catch {
+            New-Item -Path "${DownloadFolder}" -Name "${ID}.txt" -ItemType 'file' -Value '' -Force
+        }
+        return
+    }
+
+    $audioId = $videoData.dash.audio.id | Measure-Object -Maximum | Select-Object -ExpandProperty 'Maximum'
+    $audioDash = $videoData.dash.audio | Where-Object -Property 'id' -EQ $audioId | Select-Object -ExpandProperty 'baseUrl'
+    $videoId = $videoData.dash.video.id | Measure-Object -Maximum | Select-Object -ExpandProperty 'Maximum'
+    $videoP60 = $videoData.accept_description.IndexOf('高清 1080P60')
+    $videoPhigh = $videoData.accept_description.IndexOf('高清 1080P+')
+    $videoP = $videoData.accept_description.IndexOf('高清 1080P')
+    $videoAq = $videoData.accept_quality
+    $videoId = if ($videoP60 -ge 0) { $videoAq[$videoP60] } elseif ($videoPhigh -ge 0) { $videoAq[$videoPhigh] } elseif ($videoP -ge 0) { $videoAq[$videoP] } else { $videoId }
+    $videoDash = $videoData.dash.video | Where-Object -Property 'id' -EQ $videoId | Where-Object -Property 'codecs' -Match 'avc' | Select-Object -ExpandProperty 'baseUrl'
 
     try {
-        $aria2cArgs = -join @('-x16 -s12 -j20 -k1M --continue --check-certificate=false --file-allocation=none '
-            "--summary-interval=0 --download-result=hide --console-log-level=notice ""$($AudioDASH)"" "
-            "--header=""User-Agent: $($UserAgent)"" --header=""Referer: $($Headers.referer)"" --dir=$($DownloadFolder) --out $($CID)_a.m4s"
+        [Console]::Out.WriteLine("$($PSStyle.Foreground.Green)$(Get-Date -Format 'MM/dd HH:mm:ss') - ${ID} 正在下载$($PSStyle.Reset)")
+        $aria2cArgs = Get-Aria2cArgument -SourceUrl $audioDash -OutputName "${CID}_a.m4s" -DownloadFolder "${DownloadFolder}" -UserAgent $UserAgent -Referer $Headers.referer
+        & aria2c.exe @aria2cArgs 1>> "${DownloadFolder}/${CID}_.log"
+
+        $aria2cArgs = Get-Aria2cArgument -SourceUrl $videoDash -OutputName "${CID}_v.m4s" -DownloadFolder "${DownloadFolder}" -UserAgent $UserAgent -Referer $Headers.referer
+        & aria2c.exe @aria2cArgs 1>> "${DownloadFolder}/${CID}_.log"
+
+        $ffmpegArgs = @(
+            '-y', '-hide_banner',
+            '-i', "${DownloadFolder}/${CID}_a.m4s",
+            '-i', "${DownloadFolder}/${CID}_v.m4s",
+            '-c', 'copy',
+            "${DownloadFolder}/${ID}.mp4"
         )
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - aria2c.exe $($aria2cArgs)"
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 开始下载音频" -ForegroundColor Green
-        Start-Process -NoNewWindow -Wait -FilePath 'aria2c.exe' -ArgumentList $aria2cArgs -RedirectStandardError "$($DownloadFolder)/$($CID)_.log"
-        $aria2cArgs = -join @('-x16 -s12 -j20 -k1M --continue --check-certificate=false --file-allocation=none '
-            "--summary-interval=0 --download-result=hide --console-log-level=notice ""$($VideoDASH)"" "
-            "--header=""User-Agent: $($UserAgent)"" --header=""Referer: $($Headers.referer)"" --dir=$($DownloadFolder) --out $($CID)_v.m4s"
-        )
-        Write-Debug "$(Get-Date -Format 'MM/dd HH:mm:ss') - aria2c.exe $($aria2cArgs)"
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 开始下载视频" -ForegroundColor Green
-        Start-Process -NoNewWindow -Wait -FilePath 'aria2c.exe' -ArgumentList $aria2cArgs -RedirectStandardError "$($DownloadFolder)/$($CID)_.log"
-    
-        if ($CC) {
-            Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 合并音视频 嵌入CC字幕" -ForegroundColor Green
-            $ffmpegArgs = -join @(
-                "-y -hide_banner -i $($DownloadFolder)/$($CID)_a.m4s -i $($DownloadFolder)/$($CID)_v.m4s -c:a copy "
-                "-vf subtitles=.$($DownloadFolder.Substring($TruePath.Length))/$($CID)_.ass  $($DownloadFolder)/$($ID).mp4"
-            )
-        } else {
-            Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 合并音视频" -ForegroundColor Green
-            $ffmpegArgs = "-y -hide_banner -i $($DownloadFolder)/$($CID)_a.m4s -i $($DownloadFolder)/$($CID)_v.m4s -c copy $($DownloadFolder)/$($ID).mp4"
-        }
-        Start-Process -NoNewWindow -Wait -FilePath 'ffmpeg.exe' -ArgumentList $ffmpegArgs -RedirectStandardError "$($DownloadFolder)/$($CID)_.log"
+        & ffmpeg.exe @ffmpegArgs 2>> "${DownloadFolder}/${CID}_.log"
     } catch {
-        New-Item -Path "$($DownloadFolder)" -Name "$($BID).txt" -ItemType 'file' -Value '' -Force
+        [Console]::Out.WriteLine("$($PSStyle.Foreground.Red)$(Get-Date -Format 'MM/dd HH:mm:ss') - ${ID} 出现错误$($PSStyle.Reset)")
+        New-Item -Path "${DownloadFolder}" -Name "${ID}.txt" -ItemType 'file' -Value '' -Force
     }
-    Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - 清理临时文件`n" -ForegroundColor Green
-    Remove-Item "$($DownloadFolder)/$($CID)_*.*"
 }
 
 function Main {
+    param (
+        [string]$RankNum
+    )
+
     if (!(Test-Path $DownloadFolder)) {
         New-Item -ItemType 'Directory' -Path $DownloadFolder
     }
+    if (!(Test-Path $FootageFolder)) {
+        New-Item -ItemType 'Directory' -Path $FootageFolder
+    }
+    $LocalVideos = @()
     $RankVideos = @()
-    $ExistVideos = @()
-    Get-ChildItem "$($DownloadFolder)/*.mp4" | ForEach-Object { $ExistVideos += $_.BaseName }
-    Get-Content "$($TruePath)/DATA/$($RankNum)期数据.json" | ConvertFrom-Json | Where-Object {
+    Get-ChildItem "${DownloadFolder}/*.mp4" | ForEach-Object { $LocalVideos += $_.BaseName }
+    Get-Content "${TruePath}/DATA/${RankNum}期数据.json" | ConvertFrom-Json | Where-Object {
         $_.rank -le 20
     } | Select-Object -ExpandProperty av | ForEach-Object {
-        $RankVideos += "av$($_)"
+        $RankVideos += "av${_}"
     }
-    $NeedVideos = $RankVideos | Where-Object { $ExistVideos -notcontains $_ }
-    $OldVideos = $ExistVideos | Where-Object { $RankVideos -notcontains $_ }
-    $RankVideos | Where-Object { $ExistVideos -contains $_ } | ForEach-Object {
-        Write-Host "$(Get-Date -Format 'MM/dd HH:mm:ss') - $($_) 已存在，跳过下载" -ForegroundColor Green
+    $TaskQueue = $RankVideos | Where-Object { $LocalVideos -notcontains $_ }
+    $OldVideos = $LocalVideos | Where-Object { $RankVideos -notcontains $_ }
+    $RankVideos | Where-Object { $LocalVideos -contains $_ } | ForEach-Object {
+        [Console]::Out.WriteLine("$($PSStyle.Foreground.Yellow)$(Get-Date -Format 'MM/dd HH:mm:ss') - ${_} 已存在，跳过下载$($PSStyle.Reset)")
     }
     Add-Type -AssemblyName Microsoft.VisualBasic
     $OldVideos | ForEach-Object {
         [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile(
-            (Resolve-Path "$($DownloadFolder)/$($_).mp4"), 'OnlyErrorDialogs', 'SendToRecycleBin')
+            (Resolve-Path "${DownloadFolder}/${_}.mp4"), 'OnlyErrorDialogs', 'SendToRecycleBin')
     }
-    Get-ChildItem "$($DownloadFolder)/*" -Exclude *.mp4, *.m4s | ForEach-Object {
+    Get-ChildItem "${DownloadFolder}/*" -Exclude *.mp4, *.m4s | ForEach-Object {
         [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile(
-            "$($_)", 'OnlyErrorDialogs', 'SendToRecycleBin')
+            (Resolve-Path "${_}"), 'OnlyErrorDialogs', 'SendToRecycleBin')
     }
-    $NeedVideos | ForEach-Object {
-        BiliDown $_ # -Debug
+    $TaskQueue | ForEach-Object {
+        BiliDown $_
+    }
+    Get-ChildItem "${DownloadFolder}/*" -Include *.log, *.m4s | ForEach-Object {
+        [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile(
+            (Resolve-Path "${_}"), 'OnlyErrorDialogs', 'SendToRecycleBin')
     }
 }
 
-Main
+Main -RankNum $RankNum
