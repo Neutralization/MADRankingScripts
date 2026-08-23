@@ -25,7 +25,16 @@ preview = true
 [tool.ruff.lint]
 preview = false
 
+[tool.pyright]
+typeCheckingMode = "basic"
+pythonVersion = "3.12"
+pythonPlatform = "All"
+include = ["."]
+exclude = ["**/__pycache__", "**/.venv", "**/build", "**/dist","**/node_modules", "**/.*"]
+
 [dependency-groups]
 dev = [
+    "basedpyright>=1.39.10",
+    "pandas-stubs>=3.0.5.260730",
+    "pyright>=1.1.411",
     "ruff>=0.16.3",
-]
