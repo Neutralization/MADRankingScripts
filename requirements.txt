@@ -4,4 +4,3 @@ pandas
 pillow
 requests
 selenium
-webdriver_manager
