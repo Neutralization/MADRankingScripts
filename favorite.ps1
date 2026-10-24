@@ -370,7 +370,7 @@ function Main {
     $Top1 = Get-Ranking 1
     Add-Favourite $FIDData['MAD 一位'] $Top1
     Get-Ranking '旧作' | ForEach-Object {
-        Add-Favourite $FIDData['MAD 旧作推荐'] $_
+        Add-Favourite $FIDData['MAD 旧作推荐 2'] $_
     }
     Get-Ranking '新作' | ForEach-Object {
         Add-Favourite $FIDData['MAD 新作推荐 2'] $_
