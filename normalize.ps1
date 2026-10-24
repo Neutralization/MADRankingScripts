@@ -60,7 +60,7 @@ function Main {
     $LocalVideos = @()
     Get-ChildItem "${FootageFolder}/*.mp4" | ForEach-Object { $LocalVideos += $_.BaseName }
     if ($RankNum -eq 'pickup') {
-        $JsonData = Get-Content -Path 'pickup.json'
+        $JsonData = Get-Content -Path "${$DataFolder}/pickup.json"
     } else {
         $JsonData = Get-Content -Path "${DataFolder}/${RankNum}期数据.json"
     }
