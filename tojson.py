@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 from functools import reduce
 from math import floor
 
@@ -210,24 +211,40 @@ def pickup(weeks):
         avid = (tmp & MASK_CODE) ^ XOR_CODE
         return avid
 
-    with open(f"./DATA/{weeks:03d}期pickup.txt", "r", encoding="utf-8") as f:
-        pickups = [line.strip("\n") for line in f if line.strip("\n") != ""]
+    pickup_path = f"./DATA/{weeks:03d}期pickup.txt"
+    if not os.path.exists(pickup_path):
+        print(f"pickup 文件不存在，已创建空文件：{pickup_path}")
+        with open(pickup_path, "w", encoding="utf-8"):
+            pass
+        raise FileNotFoundError(pickup_path)
+    with open(pickup_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    pickups = list(
+        re.finditer(r"(?m)^(BV1[0-9A-Za-z]{9})\n([^\n]+)\n([^\n]+)\n([^\n]+)$", content)
+    )
+    if not pickups:
+        print(f"pickup 未找到推荐：{weeks}")
+        return []
+    old_marker = re.search(r"(?m)^旧作 pick$", content)
+    old_start = sum(match.start() < old_marker.start() for match in pickups) if old_marker else 0
+    if not 0 < old_start < len(pickups):
+        old_start = len(pickups) // 2
     infos = reduce(
         lambda x, y: {**x, **y},
-        [getinfo(bv2av(pickups[4 * x])) for x in range(len(pickups) // 4)],
+        [getinfo(bv2av(match[1])) for match in pickups],
     )
     jsondata = [
         {
-            "rank": -(x + 4) if x < len(pickups) // 8 else -(x - 1),
-            "av": bv2av(pickups[4 * x + 0]),
+            "rank": -(x + 4) if x < old_start else -(x - old_start + 1),
+            "av": bv2av(match[1]),
             "offset": 0,
-            "title": infos[bv2av(pickups[4 * x + 0])]["title"],
-            "up": infos[bv2av(pickups[4 * x + 0])]["owner"],
-            "pubdate": infos[bv2av(pickups[4 * x + 0])]["pubdate"],
-            "type": f"{pickups[4 * x + 1]}\\n\\n{pickups[4 * x + 2]}",
-            "comment": pickups[4 * x + 3],
+            "title": infos[bv2av(match[1])]["title"],
+            "up": infos[bv2av(match[1])]["owner"],
+            "pubdate": infos[bv2av(match[1])]["pubdate"],
+            "type": f"{match[2]}\\n\\n{match[3]}",
+            "comment": match[4],
         }
-        for x in range(len(pickups) // 4)
+        for x, match in enumerate(pickups)
     ]
     return jsondata
 
