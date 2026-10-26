@@ -63,53 +63,25 @@ function ReCountResource() {
     }
 }
 
-function AddAudioProperty(Target, Ptype, Duration, Offset, Direction) {
+function AddAudioProperty(Target, Duration, Offset, Direction) {
     NewProperty = Target.property('Audio Levels');
-    if (Ptype == 1) {
-        // 1/4 circle
-        if (Direction == 1) {
-            // fade in
-            for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
-                NewProperty.setValueAtTime(t, [
-                    (Math.sqrt(1 - Math.pow(1 - (t - Offset) / Duration, 2)) - 1) * 50,
-                    (Math.sqrt(1 - Math.pow(1 - (t - Offset) / Duration, 2)) - 1) * 50,
-                ]);
-            }
-            NewProperty.setValueAtTime(Offset, [-Infinity, -Infinity]);
+    if (Direction == 1) {
+        for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
+            NewProperty.setValueAtTime(t, [
+                (Math.sqrt(1 - Math.pow(1 - (t - Offset) / Duration, 2)) - 1) * 50,
+                (Math.sqrt(1 - Math.pow(1 - (t - Offset) / Duration, 2)) - 1) * 50,
+            ]);
         }
-        if (Direction == 2) {
-            // fade out
-            for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
-                NewProperty.setValueAtTime(t, [
-                    (Math.sqrt(1 - Math.pow((t - Offset) / Duration, 2)) - 1) * 50,
-                    (Math.sqrt(1 - Math.pow((t - Offset) / Duration, 2)) - 1) * 50,
-                ]);
-            }
-            NewProperty.setValueAtTime(Offset + Duration, [-Infinity, -Infinity]);
-        }
+        NewProperty.setValueAtTime(Offset, [-Infinity, -Infinity]);
     }
-    if (Ptype == 2) {
-        // sin
-        if (Direction == 1) {
-            // fade in
-            for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
-                NewProperty.setValueAtTime(t, [
-                    ((Math.cos((Math.PI * (t - Offset)) / Duration) + 1) / 2) * -50,
-                    ((Math.cos((Math.PI * (t - Offset)) / Duration) + 1) / 2) * -50,
-                ]);
-            }
-            NewProperty.setValueAtTime(Offset, [-Infinity, -Infinity]);
+    if (Direction == -1) {
+        for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
+            NewProperty.setValueAtTime(t, [
+                (Math.sqrt(1 - Math.pow((t - Offset) / Duration, 2)) - 1) * 50,
+                (Math.sqrt(1 - Math.pow((t - Offset) / Duration, 2)) - 1) * 50,
+            ]);
         }
-        if (Direction == 2) {
-            // fade out
-            for (t = Offset; t <= Offset + Duration; t += Duration / CompFPS) {
-                NewProperty.setValueAtTime(t, [
-                    ((Math.cos((Math.PI * (t - Offset)) / Duration + Math.PI) + 1) / 2) * -50,
-                    ((Math.cos((Math.PI * (t - Offset)) / Duration + Math.PI) + 1) / 2) * -50,
-                ]);
-            }
-            NewProperty.setValueAtTime(Offset + Duration, [-Infinity, -Infinity]);
-        }
+        NewProperty.setValueAtTime(Offset + Duration, [-Infinity, -Infinity]);
     }
     return NewProperty;
 }
@@ -144,7 +116,7 @@ for (i = 0; i < AllData.length; i++) {
     TextComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
     TextComp.layer("上传者ID").property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
     TextComp.layer("日期").property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
-    TextComp.layer("特点：").property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
+    TextComp.layer(TextComp.layer("Shape Layer 1").index - 1).property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
     TextComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
     TextComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
     if (AllData[i].av >= 10000000000) {
@@ -178,8 +150,8 @@ for (i = 0; i < AllData.length; i++) {
         ]);
     }
     VideoLayer.property('Position').setValue([738, 327]);
-    AddAudioProperty(VideoLayer, 1, 1, VideoLayer.inPoint, 1);
-    AddAudioProperty(VideoLayer, 1, 1.5, VideoLayer.outPoint - 1.5, 2);
+    AddAudioProperty(VideoLayer, 1, VideoLayer.inPoint, 1);
+    AddAudioProperty(VideoLayer, 1.5, VideoLayer.outPoint - 1.5, -1);
     NewLayer = PickupComp.layers.add(PICKUIComp);
     NewLayer.startTime = PickupComp.duration;
     TopLayer = PickupComp.layers.add(app.project.items[ResourceID.TOP]);
