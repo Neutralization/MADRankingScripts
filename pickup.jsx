@@ -1,4 +1,5 @@
 // @include 'json2/json2.js';
+app.project.expressionEngine = 'extendscript';
 app.project.workingSpace = 'Rec.709 Gamma 2.4';
 app.project.bitsPerChannel = 8;
 
@@ -36,6 +37,7 @@ for (i = 0; i < AllData.length; i++) {
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
+        FileItem.pixelAspect = 1.0;
         FileItem.name = AllData[i].rank + '_TEXT';
         FileItem.parentFolder = WeeklyFolder;
     }
@@ -47,6 +49,7 @@ for (i = 0; i < AllData.length; i++) {
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
+        FileItem.pixelAspect = 1.0;
         FileItem.name = AllData[i].av;
         FileItem.parentFolder = WeeklyFolder;
     }
@@ -138,23 +141,23 @@ for (i = 0; i < AllData.length; i++) {
     NTextLayer.moveAfter(PICKUIComp.layer(7));
     NTextLayer.trackMatteType = TrackMatteType.ALPHA;
     PICKUIComp.layer(8).remove();
-    TextComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
-    TextComp.layer(18).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
-    TextComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
-    TextComp.layer(3).property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
+    TextComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
+    TextComp.layer("上传者ID").property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
+    TextComp.layer("日期").property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
+    TextComp.layer("特点：").property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
     TextComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
     TextComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
     if (AllData[i].av >= 10000000000) {
-        TextComp.layer(4).property('Position').setValue([767.5, 361.5]);
-        TextComp.layer(18).property('Position').setValue([589, 656.4]);
+        TextComp.layer("Shape Layer 1").property('Position').setValue([767.5, 361.5]);
+        TextComp.layer("上传者ID").property('Position').setValue([589, 656.4]);
     } else {
-        TextComp.layer(4).property('Position').setValue([667.5, 361.5]);
-        TextComp.layer(18).property('Position').setValue([489, 656.4]);
+        TextComp.layer("Shape Layer 1").property('Position').setValue([667.5, 361.5]);
+        TextComp.layer("上传者ID").property('Position').setValue([489, 656.4]);
     }
     TitleImgLayer = TextComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
-    MatteLayer = PICKUIComp.layer(38);
+    MatteLayer = PICKUIComp.layer("Screen-Matte 2");
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     // VideoLayer.startTime = 0 - AllData[i].offset;
     VideoLayer.startTime = 0.5;
@@ -187,10 +190,10 @@ for (i = 0; i < AllData.length; i++) {
 app.project.consolidateFootage();
 renderQueue = app.project.renderQueue;
 render = renderQueue.items.add(app.project.items[ResourceID[compname + '—旧作']]);
-render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].applyTemplate('Voukoder Classic MP4');
 render.outputModules[1].file = new File(compname + '—旧作.mp4');
 render = renderQueue.items.add(app.project.items[ResourceID[compname + '—新作']]);
-render.outputModules[1].applyTemplate('Voukoder');
+render.outputModules[1].applyTemplate('Voukoder Classic MP4');
 render.outputModules[1].file = new File(compname + '—新作.mp4');
 
 app.project.save(File(compname + '.aep'));

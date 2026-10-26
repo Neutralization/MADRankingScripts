@@ -18,6 +18,14 @@ content = file.read();
 file.close();
 AllData = JSON.parse(content);
 
+// Rank-keyed lookup: JSON array order is not significant.
+DataByRank = {};
+for (i = 0; i < AllData.length; i++) {
+    if (AllData[i] != undefined && AllData[i].rank != undefined) {
+        DataByRank[AllData[i].rank] = AllData[i];
+    }
+}
+
 CoverSize = [160, 100];
 PartSize = [1024, 576];
 CompSize = [1280, 720];
@@ -86,7 +94,7 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-for (i = 0; i < 106; i++) {
+for (i = 0; i < AllData.length; i++) {
     if (AllData[i] != undefined) {
         if (AllData[i].rank <= 20) {
             FileFullPath = './FOOTAGE/No.' + WEEK_NUM + '/VIDEO/av' + AllData[i].av + '.mp4';
@@ -96,6 +104,7 @@ for (i = 0; i < 106; i++) {
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
+        FileItem.pixelAspect = 1.0;
         if (AllData[i].rank <= 20) {
             FileItem.name = AllData[i].av;
             FileItem.parentFolder = VideoFolder;
@@ -108,6 +117,7 @@ for (i = 0; i < 106; i++) {
         FootageFile = new ImportOptions(File(FileFullPath));
         FootageFile.ImportAs = ImportAsType.FOOTAGE;
         FileItem = app.project.importFile(FootageFile);
+        FileItem.pixelAspect = 1.0;
         FileItem.name = AllData[i].rank + '_TEXT';
         FileItem.parentFolder = TextFolder;
     }
@@ -135,75 +145,69 @@ end = edate.getFullYear() + '年' + (edate.getMonth() + 1) + '月' + edate.getDa
 DateComp.layer(4).property('Source Text').expression = 'text.sourceText="\\n\\t\\t' + start + '——' + end + '";';
 
 for (i = 19; i >= 0; i--) {
+    DataRecord = DataByRank[i + 1];
+    if (DataRecord == undefined) {
+        continue;
+    }
     TEXTCompName = 'TEXT-UI ' + (i + 1);
     TEXTComp = app.project.items[ResourceID[TEXTCompName]];
-    // 总分
-    TEXTComp.layer(6).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['分']) + '";';
-    // 收藏
-    TEXTComp.layer(7).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['藏']) + '";';
-    // 弹幕
-    TEXTComp.layer(8).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['弹']) + '";';
-    // 评论
-    TEXTComp.layer(9).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['评']) + '";';
-    // 播放
-    TEXTComp.layer(10).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['点']) + '";';
-    // 排名
-    TEXTComp.layer(13).property('Source Text').expression = 'text.sourceText="' + AllData[i].rank + '";';
-    // 日期
-    TEXTComp.layer(14).property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
-    // 标题
-    // TEXTComp.layer(15).property('Source Text').expression = 'text.sourceText=\'' + AllData[i].title + '\';';
-    // TEXTComp.layer(15).property('Source Text').expression.enabled = false;
-    // TEXTComp.layer(15).enabled = false;
-    // UP
-    TEXTComp.layer(16).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
-    // ID
-    TEXTComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
-    if (AllData[i].av >= 10000000000) {
-        TEXTComp.layer(1).property('Position').setValue([767.5, 361.5]);
-        TEXTComp.layer(16).property('Position').setValue([589, 656.4]);
+    TEXTComp.layer("总分").property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['分']) + '";';
+    TEXTComp.layer("收藏").property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['藏']) + '";';
+    TEXTComp.layer("弹幕").property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['弹']) + '";';
+    TEXTComp.layer("评论").property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['评']) + '";';
+    TEXTComp.layer("播放").property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['点']) + '";';
+    TEXTComp.layer("本周排名").property('Source Text').expression = 'text.sourceText="' + DataRecord.rank + '";';
+    TEXTComp.layer("日期").property('Source Text').expression = 'text.sourceText="' + DataRecord.pubdate + '";';
+    TEXTComp.layer("作品名").property('Source Text').expression = 'text.sourceText=\'' + DataRecord.title + '\';';
+    TEXTComp.layer("作品名").property('Source Text').expression.enabled = false;
+    TEXTComp.layer("作品名").enabled = false;
+    TEXTComp.layer("上传者ID").property('Source Text').expression = 'text.sourceText="' + DataRecord.up + '";';
+    TEXTComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + DataRecord.av + '";';
+    if (DataRecord.av >= 10000000000) {
+        TEXTComp.layer("Shape Layer 1").property('Position').setValue([767.5, 361.5]);
+        TEXTComp.layer("上传者ID").property('Position').setValue([589, 656.4]);
     }
 
     // 上周排名
-    TEXTComp.layer(11).property('Source Text').expression = 'text.sourceText="' + AllData[i].last + '";';
+    TEXTComp.layer("上周排名").property('Source Text').expression = 'text.sourceText="' + DataRecord.last + '";';
     // NEW
-    if (AllData[i].last != 'null') {
-        if (AllData[i].last == AllData[i].rank) {
-            TEXTComp.layer(2).enabled = false;
-            TEXTComp.layer(3).enabled = true;
-            TEXTComp.layer(4).enabled = false;
-            TEXTComp.layer(5).enabled = false;
-            TEXTComp.layer(13).effect(1).enabled = false;
-            TEXTComp.layer(13).effect(2).enabled = false;
-            TEXTComp.layer(13).effect(3).enabled = true;
-        } else if (AllData[i].last < AllData[i].rank) {
-            TEXTComp.layer(2).enabled = false;
-            TEXTComp.layer(3).enabled = false;
-            TEXTComp.layer(4).enabled = true;
-            TEXTComp.layer(5).enabled = false;
-            TEXTComp.layer(13).effect(1).enabled = false;
-            TEXTComp.layer(13).effect(2).enabled = true;
-            TEXTComp.layer(13).effect(3).enabled = false;
-        } else if (AllData[i].last > AllData[i].rank) {
-            TEXTComp.layer(2).enabled = false;
-            TEXTComp.layer(3).enabled = false;
-            TEXTComp.layer(4).enabled = false;
-            TEXTComp.layer(5).enabled = true;
-            TEXTComp.layer(13).effect(1).enabled = true;
-            TEXTComp.layer(13).effect(2).enabled = false;
-            TEXTComp.layer(13).effect(3).enabled = false;
+    if (DataRecord.last != 'null') {
+        if (DataRecord.last == DataRecord.rank) {
+            TEXTComp.layer("NEW!").enabled = false;
+            TEXTComp.layer("equal").enabled = true;
+            TEXTComp.layer("down").enabled = false;
+            TEXTComp.layer("up").enabled = false;
+            TEXTComp.layer("本周排名").effect(1).enabled = false;
+            TEXTComp.layer("本周排名").effect(2).enabled = false;
+            TEXTComp.layer("本周排名").effect(3).enabled = true;
+        } else if (DataRecord.last < DataRecord.rank) {
+            TEXTComp.layer("NEW!").enabled = false;
+            TEXTComp.layer("equal").enabled = false;
+            TEXTComp.layer("down").enabled = true;
+            TEXTComp.layer("up").enabled = false;
+            TEXTComp.layer("本周排名").effect(1).enabled = false;
+            TEXTComp.layer("本周排名").effect(2).enabled = true;
+            TEXTComp.layer("本周排名").effect(3).enabled = false;
+        } else if (DataRecord.last > DataRecord.rank) {
+            TEXTComp.layer("NEW!").enabled = false;
+            TEXTComp.layer("equal").enabled = false;
+            TEXTComp.layer("down").enabled = false;
+            TEXTComp.layer("up").enabled = true;
+            TEXTComp.layer("本周排名").effect(1).enabled = true;
+            TEXTComp.layer("本周排名").effect(2).enabled = false;
+            TEXTComp.layer("本周排名").effect(3).enabled = false;
         }
     } else {
-        TEXTComp.layer(2).enabled = true;
-        TEXTComp.layer(3).enabled = false;
-        TEXTComp.layer(4).enabled = false;
-        TEXTComp.layer(5).enabled = true;
-        TEXTComp.layer(13).effect(1).enabled = true;
-        TEXTComp.layer(13).effect(2).enabled = false;
-        TEXTComp.layer(13).effect(3).enabled = false;
+        TEXTComp.layer("NEW!").enabled = true;
+        TEXTComp.layer("equal").enabled = false;
+        TEXTComp.layer("down").enabled = false;
+        TEXTComp.layer("up").enabled = true;
+        TEXTComp.layer("本周排名").effect(1).enabled = true;
+        TEXTComp.layer("本周排名").effect(2).enabled = false;
+        TEXTComp.layer("本周排名").effect(3).enabled = false;
     }
 
-    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
+    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[DataRecord.rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
 
@@ -216,12 +220,12 @@ for (i = 19; i >= 0; i--) {
     if (UIComp.layer(1).name == 'WaterMark.png') {
         UIComp.layer(1).remove();
     }
-    MatteLayer = UIComp.layer(36);
-    VideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
+    MatteLayer = UIComp.layer("Screen-Matte 2");
+    VideoLayer = UIComp.layers.add(app.project.items[ResourceID[DataRecord.av]], 30);
     delay = 0.5;
     if (i + 1 < 4) {
         delay = 1 + 7 / CompFPS;
-        FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 80);
+        FullVideoLayer = UIComp.layers.add(app.project.items[ResourceID[DataRecord.av]], 80);
         // FullVideoLayer.startTime = 0 - AllData[i].offset + delay;
         FullVideoLayer.startTime = 0 + delay;
         FullVideoLayer.inPoint = 0 + delay;
@@ -239,7 +243,7 @@ for (i = 19; i >= 0; i--) {
             ]);
         }
         FullVideoLayer.property('Position').setValue([CompSize[0] / 2, CompSize[1] / 2]);
-        TrueDuration = app.project.items[ResourceID[AllData[i].av]].duration;
+        TrueDuration = app.project.items[ResourceID[DataRecord.av]].duration;
         if (UIComp.duration < TrueDuration) {
             TrueDuration = UIComp.duration;
         }
@@ -282,43 +286,42 @@ for (i = 19; i >= 0; i--) {
     }
 }
 
-for (i = 100; i < 106; i++) {
-    if (AllData[i] != undefined && AllData[i].rank > -4) {
-        TEXTCompName = 'old' + AllData[i].rank;
-        UIComp = 'UI-PICK UP old' + AllData[i].rank;
-    } else if (AllData[i] != undefined && AllData[i].rank > -7) {
-        TEXTCompName = 'new' + AllData[i].rank;
-        UIComp = 'UI-PICK UP new' + AllData[i].rank;
+for (i = -1; i >= -6; i--) {
+    DataRecord = DataByRank[i];
+    if (DataRecord == undefined) {
+        continue;
+    }
+    if (DataRecord.rank > -4) {
+        TEXTCompName = 'old' + DataRecord.rank;
+        UIComp = 'UI-PICK UP old' + DataRecord.rank;
+    } else if (DataRecord.rank > -7) {
+        TEXTCompName = 'new' + DataRecord.rank;
+        UIComp = 'UI-PICK UP new' + DataRecord.rank;
     } else {
         continue;
     }
     TEXTComp = app.project.items[ResourceID[TEXTCompName]];
     PICKUIComp = app.project.items[ResourceID[UIComp]];
-    // ID
-    TEXTComp.layer(20).property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
-    // UP主
-    TEXTComp.layer(18).property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
-    // 日期
-    TEXTComp.layer(17).property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
-    // 特点
-    TEXTComp.layer(3).property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
-    // 推荐语
-    TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
-    TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
-    if (AllData[i].av >= 10000000000) {
-        TEXTComp.layer(4).property('Position').setValue([767.5, 361.5]);
-        TEXTComp.layer(18).property('Position').setValue([589, 656.4]);
+    TEXTComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + DataRecord.av + '";';
+    TEXTComp.layer("上传者ID").property('Source Text').expression = 'text.sourceText="' + DataRecord.up + '";';
+    TEXTComp.layer("日期").property('Source Text').expression = 'text.sourceText="' + DataRecord.pubdate + '";';
+    TEXTComp.layer("特点：").property('Source Text').expression = 'text.sourceText="' + DataRecord.type + '";';
+    TEXTComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + DataRecord.comment.substring(1) + '";';
+    TEXTComp.layer(1).property('Source Text').expression = 'text.sourceText="' + DataRecord.comment.substring(0, 1) + '";';
+    if (DataRecord.av >= 10000000000) {
+        TEXTComp.layer("Shape Layer 1").property('Position').setValue([767.5, 361.5]);
+        TEXTComp.layer("上传者ID").property('Position').setValue([589, 656.4]);
     } else {
-        TEXTComp.layer(4).property('Position').setValue([667.5, 361.5]);
-        TEXTComp.layer(18).property('Position').setValue([489, 656.4]);
+        TEXTComp.layer("Shape Layer 1").property('Position').setValue([667.5, 361.5]);
+        TEXTComp.layer("上传者ID").property('Position').setValue([489, 656.4]);
     }
     // 标题
-    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
+    TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[DataRecord.rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
-    MatteLayer = PICKUIComp.layer(38);
-    VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
-    // VideoLayer.startTime = 0 - AllData[i].offset;
+    MatteLayer = PICKUIComp.layer("Screen-Matte 2");
+    VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[DataRecord.av]], 30);
+    // VideoLayer.startTime = 0 - DataRecord.offset;
     VideoLayer.startTime = 0.5;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
@@ -344,68 +347,75 @@ for (i = 100; i < 106; i++) {
 for (i = 1; i < 4; i++) {
     TopCompName = 'TOP' + i + '-3';
     TopComp = app.project.items[ResourceID[TopCompName]];
+    TopRecord = DataByRank[i + 1];
+    NextTopRecord = DataByRank[i + 2];
+    if (TopRecord == undefined || NextTopRecord == undefined) {
+        continue;
+    }
     TopComp.layer(3).property('Source Text').expression = 'text.sourceText="' + i + '";';
-    TopComp.layer(2).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[i]['分'] - AllData[i + 1]['分']) + '";';
+    TopComp.layer(2).property('Source Text').expression =
+        'text.sourceText="' + numberWithCommas(TopRecord['分'] - NextTopRecord['分']) + '";';
 }
 
 for (i = 1; i <= 16; i++) {
     SUBCompName = 'SUBRANK ' + i;
     SUBComp = app.project.items[ResourceID[SUBCompName]];
     for (l = 1; l <= 5; l++) {
-        Index = 19 + (i - 1) * 5 + l;
-        // id
-        SUBComp.layer(l + 0).property('Source Text').expression = 'text.sourceText="' + AllData[Index].av + '";';
-        // 日期
-        SUBComp.layer(l + 5).property('Source Text').expression = 'text.sourceText="' + AllData[Index].pubdate + '";';
-        // 排名
-        SUBComp.layer(l + 10).property('Source Text').expression = 'text.sourceText="' + AllData[Index].rank + '";';
-        // UP
-        SUBComp.layer(l + 20).property('Source Text').expression = 'text.sourceText="' + AllData[Index].up + '";';
-        // 总分
-        SUBComp.layer(l + 25).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(AllData[Index]['分']) + '";';
-        // 上周排名
-        SUBComp.layer(l + 30).property('Source Text').expression = 'text.sourceText="' + AllData[Index].last + '";';
-        // NEW
-        if (AllData[Index].last != 'null') {
-            if (AllData[Index].last == AllData[Index].rank) {
-                SUBComp.layer(l + 35).enabled = false;
-                SUBComp.layer(l + 40).enabled = true;
-                SUBComp.layer(l + 45).enabled = false;
-                SUBComp.layer(l + 50).enabled = false;
-                SUBComp.layer(l + 10).effect(1).enabled = false;
-                SUBComp.layer(l + 10).effect(2).enabled = false;
-                SUBComp.layer(l + 10).effect(3).enabled = true;
-            } else if (AllData[Index].last > AllData[Index].rank) {
-                SUBComp.layer(l + 35).enabled = false;
-                SUBComp.layer(l + 40).enabled = false;
-                SUBComp.layer(l + 45).enabled = false;
-                SUBComp.layer(l + 50).enabled = true;
-                SUBComp.layer(l + 10).effect(1).enabled = true;
-                SUBComp.layer(l + 10).effect(2).enabled = false;
-                SUBComp.layer(l + 10).effect(3).enabled = false;
-            } else if (AllData[Index].last < AllData[Index].rank) {
-                SUBComp.layer(l + 35).enabled = false;
-                SUBComp.layer(l + 40).enabled = false;
-                SUBComp.layer(l + 45).enabled = true;
-                SUBComp.layer(l + 50).enabled = false;
-                SUBComp.layer(l + 10).effect(1).enabled = false;
-                SUBComp.layer(l + 10).effect(2).enabled = true;
-                SUBComp.layer(l + 10).effect(3).enabled = false;
+        Rank = 20 + (i - 1) * 5 + l;
+        DataRecord = DataByRank[Rank];
+        if (DataRecord == undefined) {
+            continue;
+        }
+        SUBComp.layer("AV号 " + l).property('Source Text').expression = 'text.sourceText="' + DataRecord.av + '";';
+        SUBComp.layer("日期 " + l).property('Source Text').expression = 'text.sourceText="' + DataRecord.pubdate + '";';
+        SUBComp.layer("本周排名 " + l).property('Source Text').expression = 'text.sourceText="' + DataRecord.rank + '";';
+        SUBComp.layer("上传者ID " + l).property('Source Text').expression = 'text.sourceText="' + DataRecord.up + '";';
+        SUBComp.layer("总分 " + l).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['分']) + '";';
+        SUBComp.layer("上周排名 " + l).property('Source Text').expression = 'text.sourceText="' + DataRecord.last + '";';
+        if (DataRecord.last != 'null') {
+            if (DataRecord.last == DataRecord.rank) {
+                SUBComp.layer("NEW! " + l).enabled = false;
+                SUBComp.layer("equal " + l).enabled = true;
+                SUBComp.layer("down " + l).enabled = false;
+                SUBComp.layer("up " + l).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(1).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(2).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(3).enabled = true;
+            } else if (DataRecord.last > DataRecord.rank) {
+                SUBComp.layer("NEW! " + l).enabled = false;
+                SUBComp.layer("equal " + l).enabled = false;
+                SUBComp.layer("down " + l).enabled = false;
+                SUBComp.layer("up " + l).enabled = true;
+                SUBComp.layer("本周排名 " + l).effect(1).enabled = true;
+                SUBComp.layer("本周排名 " + l).effect(2).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(3).enabled = false;
+            } else if (DataRecord.last < DataRecord.rank) {
+                SUBComp.layer("NEW! " + l).enabled = false;
+                SUBComp.layer("equal " + l).enabled = false;
+                SUBComp.layer("down " + l).enabled = true;
+                SUBComp.layer("up " + l).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(1).enabled = false;
+                SUBComp.layer("本周排名 " + l).effect(2).enabled = true;
+                SUBComp.layer("本周排名 " + l).effect(3).enabled = false;
             }
         } else {
-            SUBComp.layer(l + 35).enabled = true;
-            SUBComp.layer(l + 40).enabled = false;
-            SUBComp.layer(l + 45).enabled = false;
-            SUBComp.layer(l + 50).enabled = false;
-            SUBComp.layer(l + 10).effect(1).enabled = false;
-            SUBComp.layer(l + 10).effect(2).enabled = false;
-            SUBComp.layer(l + 10).effect(3).enabled = false;
+            SUBComp.layer("NEW! " + l).enabled = true;
+            SUBComp.layer("equal " + l).enabled = false;
+            SUBComp.layer("down " + l).enabled = false;
+            SUBComp.layer("up " + l).enabled = false;
+            SUBComp.layer("本周排名 " + l).effect(1).enabled = false;
+            SUBComp.layer("本周排名 " + l).effect(2).enabled = false;
+            SUBComp.layer("本周排名 " + l).effect(3).enabled = false;
         }
     }
     for (l = 1; l <= 5; l++) {
-        Index = 19 + (i - 1) * 5 + l;
+        Rank = 20 + (i - 1) * 5 + l;
+        DataRecord = DataByRank[Rank];
+        if (DataRecord == undefined) {
+            continue;
+        }
         // 标题
-        STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[AllData[Index].rank + '_TEXT']], 6);
+        STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[DataRecord.rank + '_TEXT']], 6);
         OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
         STitleImgLayer.property('Position').setValue([157 + OrigSize.width / 2, 29 + OrigSize.height / 2 + (l - 1) * 142]);
         STitleImgLayer.outPoint = SUBComp.layer(2).outPoint;
@@ -414,7 +424,7 @@ for (i = 1; i <= 16; i++) {
         STitleImgLayer.mask(1).inverted = false;
         STitleImgLayer.mask(1).property(1).expression =
             'x=thisLayer.width>865?865:thisLayer.width;mask(1).maskPath=createPath(points=[[0,0],[x,0],[x,thisLayer.height],[0,thisLayer.height]],inTangents=[],outTangents=[],is_closed=true);';
-        CoverName = AllData[Index].rank + '_av' + AllData[Index].av;
+        CoverName = DataRecord.rank + '_av' + DataRecord.av;
         CoverLayer = SUBComp.layers.add(app.project.items[ResourceID[CoverName]], 6);
         CoverLayer.property('Position').setValue([1175, 95 + (l - 1) * 142]);
         CoverLayer.outPoint = SUBComp.layer(2).outPoint;
@@ -442,13 +452,13 @@ app.endUndoGroup();
 app.project.consolidateFootage();
 renderQueue = app.project.renderQueue;
 render = renderQueue.items.add(CoverComp169);
-render.outputModules[1].applyTemplate('带有 Alpha 的 TIFF 序列 ');
+render.outputModules[1].applyTemplate('JPEG 序列');
 render.outputModules[1].file = new File('./封面_169_[#].jpg');
 render = renderQueue.items.add(CoverComp43);
-render.outputModules[1].applyTemplate('带有 Alpha 的 TIFF 序列 ');
+render.outputModules[1].applyTemplate('JPEG 序列');
 render.outputModules[1].file = new File('./封面_43_[#].jpg');
 render = renderQueue.items.add(app.project.items[ResourceID['周刊MAD排行榜']]);
-render.outputModules[1].applyTemplate('H.264 - 匹配渲染设置 - 5 Mbps');
+render.outputModules[1].applyTemplate('Voukoder Classic MP4');
 render.outputModules[1].file = new File('./周刊MAD排行榜No.' + WEEK_NUM + '.mp4');
 
 app.project.save(File('./MAD_' + WEEK_NUM + '.aep'));
