@@ -110,6 +110,21 @@ function SetUniformScale(Target, SourceSize, TargetSize, Reverse) {
     Target.property('Scale').setValue([Scale, Scale]);
 }
 
+// last is a number or the literal string 'null' only.
+function setRankState(comp, suffix, last, rank, showNewAsUp) {
+    var isNew = last === 'null';
+    var isEqual = !isNew && last == rank;
+    var isDown = !isNew && last < rank;
+    var isUp = !isNew && last > rank;
+    comp.layer('NEW!' + suffix).enabled = isNew;
+    comp.layer('equal' + suffix).enabled = isEqual;
+    comp.layer('down' + suffix).enabled = isDown;
+    comp.layer('up' + suffix).enabled = isUp || (isNew && showNewAsUp);
+    comp.layer('本周排名' + suffix).effect(1).enabled = isUp || isNew;
+    comp.layer('本周排名' + suffix).effect(2).enabled = isDown;
+    comp.layer('本周排名' + suffix).effect(3).enabled = isEqual;
+}
+
 CoverComp43 = app.project.items[ResourceID['封面-4/3']];
 CoverComp43.layer(1).property('Source Text').expression = 'text.sourceText=' + WEEK_NUM + ';';
 CoverComp169 = app.project.items[ResourceID['封面-16/9']];
@@ -125,6 +140,8 @@ start = sdate.getFullYear() + '年' + (sdate.getMonth() + 1) + '月' + sdate.get
 edate = new Date(today - 0 * 24 * 3600 * 1000);
 end = edate.getFullYear() + '年' + (edate.getMonth() + 1) + '月' + edate.getDate() + '日凌晨';
 DateComp.layer(4).property('Source Text').expression = 'text.sourceText="\\n\\t\\t' + start + '——' + end + '";';
+
+FinalComp = app.project.items[ResourceID['周刊MAD排行榜']];
 
 for (RankNum = 20; RankNum >= 1; RankNum--) {
     DataRecord = DataByRank[RankNum];
@@ -150,42 +167,7 @@ for (RankNum = 20; RankNum >= 1; RankNum--) {
         TEXTComp.layer("Shape Layer 1").property('Position').setValue([767.5, 361.5]);
         TEXTComp.layer("上传者ID").property('Position').setValue([589, 656.4]);
     }
-    // NEW
-    if (DataRecord.last != 'null') {
-        if (DataRecord.last == DataRecord.rank) {
-            TEXTComp.layer("NEW!").enabled = false;
-            TEXTComp.layer("equal").enabled = true;
-            TEXTComp.layer("down").enabled = false;
-            TEXTComp.layer("up").enabled = false;
-            TEXTComp.layer("本周排名").effect(1).enabled = false;
-            TEXTComp.layer("本周排名").effect(2).enabled = false;
-            TEXTComp.layer("本周排名").effect(3).enabled = true;
-        } else if (DataRecord.last < DataRecord.rank) {
-            TEXTComp.layer("NEW!").enabled = false;
-            TEXTComp.layer("equal").enabled = false;
-            TEXTComp.layer("down").enabled = true;
-            TEXTComp.layer("up").enabled = false;
-            TEXTComp.layer("本周排名").effect(1).enabled = false;
-            TEXTComp.layer("本周排名").effect(2).enabled = true;
-            TEXTComp.layer("本周排名").effect(3).enabled = false;
-        } else if (DataRecord.last > DataRecord.rank) {
-            TEXTComp.layer("NEW!").enabled = false;
-            TEXTComp.layer("equal").enabled = false;
-            TEXTComp.layer("down").enabled = false;
-            TEXTComp.layer("up").enabled = true;
-            TEXTComp.layer("本周排名").effect(1).enabled = true;
-            TEXTComp.layer("本周排名").effect(2).enabled = false;
-            TEXTComp.layer("本周排名").effect(3).enabled = false;
-        }
-    } else {
-        TEXTComp.layer("NEW!").enabled = true;
-        TEXTComp.layer("equal").enabled = false;
-        TEXTComp.layer("down").enabled = false;
-        TEXTComp.layer("up").enabled = true;
-        TEXTComp.layer("本周排名").effect(1).enabled = true;
-        TEXTComp.layer("本周排名").effect(2).enabled = false;
-        TEXTComp.layer("本周排名").effect(3).enabled = false;
-    }
+    setRankState(TEXTComp, '', DataRecord.last, DataRecord.rank, true);
 
     TitleImgLayer = TEXTComp.layers.add(app.project.items[ResourceID[DataRecord.rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
@@ -250,11 +232,10 @@ for (PickNum = 1; PickNum <= 6; PickNum++) {
     }
     if (DataRecord.rank + 3 >= 0) {
         TEXTCompName = 'old' + DataRecord.rank;
-        UIComp = 'UI-PICK UP old' + DataRecord.rank;
     } else {
         TEXTCompName = 'new' + DataRecord.rank;
-        UIComp = 'UI-PICK UP new' + DataRecord.rank;
     }
+    UIComp = 'UI-PICK UP ' + TEXTCompName;
     TEXTComp = app.project.items[ResourceID[TEXTCompName]];
     PICKUIComp = app.project.items[ResourceID[UIComp]];
     TEXTComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + DataRecord.av + '";';
@@ -275,7 +256,6 @@ for (PickNum = 1; PickNum <= 6; PickNum++) {
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[DataRecord.av]], 30);
-    // VideoLayer.startTime = 0 - DataRecord.offset;
     VideoLayer.startTime = 0.5;
     VideoLayer.inPoint = 0;
     VideoLayer.outPoint = 40;
@@ -316,41 +296,7 @@ for (SubNum = 1; SubNum <= 16; SubNum++) {
         SUBComp.layer("上传者ID " + LineNum).property('Source Text').expression = 'text.sourceText="' + DataRecord.up + '";';
         SUBComp.layer("总分 " + LineNum).property('Source Text').expression = 'text.sourceText="' + numberWithCommas(DataRecord['分']) + '";';
         SUBComp.layer("上周排名 " + LineNum).property('Source Text').expression = 'text.sourceText="' + DataRecord.last + '";';
-        if (DataRecord.last != 'null') {
-            if (DataRecord.last == DataRecord.rank) {
-                SUBComp.layer("NEW! " + LineNum).enabled = false;
-                SUBComp.layer("equal " + LineNum).enabled = true;
-                SUBComp.layer("down " + LineNum).enabled = false;
-                SUBComp.layer("up " + LineNum).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(1).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(2).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(3).enabled = true;
-            } else if (DataRecord.last > DataRecord.rank) {
-                SUBComp.layer("NEW! " + LineNum).enabled = false;
-                SUBComp.layer("equal " + LineNum).enabled = false;
-                SUBComp.layer("down " + LineNum).enabled = false;
-                SUBComp.layer("up " + LineNum).enabled = true;
-                SUBComp.layer("本周排名 " + LineNum).effect(1).enabled = true;
-                SUBComp.layer("本周排名 " + LineNum).effect(2).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(3).enabled = false;
-            } else if (DataRecord.last < DataRecord.rank) {
-                SUBComp.layer("NEW! " + LineNum).enabled = false;
-                SUBComp.layer("equal " + LineNum).enabled = false;
-                SUBComp.layer("down " + LineNum).enabled = true;
-                SUBComp.layer("up " + LineNum).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(1).enabled = false;
-                SUBComp.layer("本周排名 " + LineNum).effect(2).enabled = true;
-                SUBComp.layer("本周排名 " + LineNum).effect(3).enabled = false;
-            }
-        } else {
-            SUBComp.layer("NEW! " + LineNum).enabled = true;
-            SUBComp.layer("equal " + LineNum).enabled = false;
-            SUBComp.layer("down " + LineNum).enabled = false;
-            SUBComp.layer("up " + LineNum).enabled = false;
-            SUBComp.layer("本周排名 " + LineNum).effect(1).enabled = false;
-            SUBComp.layer("本周排名 " + LineNum).effect(2).enabled = false;
-            SUBComp.layer("本周排名 " + LineNum).effect(3).enabled = false;
-        }
+        setRankState(SUBComp, ' ' + LineNum, DataRecord.last, DataRecord.rank, false);
         // 标题
         STitleImgLayer = SUBComp.layers.add(app.project.items[ResourceID[DataRecord.rank + '_TEXT']], 6);
         OrigSize = STitleImgLayer.sourceRectAtTime(STitleImgLayer.inPoint, false);
@@ -384,7 +330,7 @@ render.outputModules[1].file = new File('./封面_169_[#].jpg');
 render = renderQueue.items.add(CoverComp43);
 render.outputModules[1].applyTemplate('JPEG 序列');
 render.outputModules[1].file = new File('./封面_43_[#].jpg');
-render = renderQueue.items.add(app.project.items[ResourceID['周刊MAD排行榜']]);
+render = renderQueue.items.add(FinalComp);
 render.outputModules[1].applyTemplate('Voukoder Classic MP4');
 render.outputModules[1].file = new File('./周刊MAD排行榜No.' + WEEK_NUM + '.mp4');
 
