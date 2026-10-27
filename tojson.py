@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import argparse
 import json
 import os
@@ -250,16 +248,16 @@ def pickup(weeks):
 
 
 def lastrank(weeks):
-    rankdata = {
-        x["av"]: x["rank"]
-        for x in json.load(
-            open(f"./DATA/{weeks - 1:03d}期数据.json", "r", encoding="utf-8")
-        )
-        if (x["rank"] > 0 and x["rank"] <= 100)
-    }
+    with open(f"./DATA/{weeks - 1:03d}期数据.json", "r", encoding="utf-8") as f:
+        rankdata = {
+            x["av"]: x["rank"]
+            for x in json.load(f)
+            if (x["rank"] > 0 and x["rank"] <= 100)
+        }
     database = []
     for w in range(376, weeks):
-        database += json.load(open(f"./DATA/{w:03d}期数据.json", "r", encoding="utf-8"))
+        with open(f"./DATA/{w:03d}期数据.json", "r", encoding="utf-8") as f:
+            database += json.load(f)
     offsetdata = {}
     for d in database:
         if d["offset"] > 0 and d["rank"] > 0 and d["rank"] <= 100:
@@ -293,12 +291,8 @@ def main(weeks):
         x["offset"] = x["offset"] if x["offset"] else offsets[-1] if offsets else 0
     this += pickup(weeks)
     rankdoor(this, weeks)
-    json.dump(
-        this,
-        open(f"./DATA/{weeks:03d}期数据.json", "w", encoding="utf-8"),
-        ensure_ascii=False,
-        indent=4,
-    )
+    with open(f"./DATA/{weeks:03d}期数据.json", "w", encoding="utf-8") as f:
+        json.dump(this, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":

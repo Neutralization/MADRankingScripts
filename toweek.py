@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import json
 import os
-
-import requests
-import lxml.etree as etree
-from openpyxl import Workbook
 from math import floor
 
 import arrow
+import lxml.etree as etree  # noqa: PLR0402 - pyright cannot resolve "from lxml import etree"
+import requests
+from openpyxl import Workbook
 
 
 def load_env_file():
@@ -164,8 +161,8 @@ def update_current(session, authenticity_token):
 def download_current(weeks, session=None):
     """下载指定期数的榜单，按既有十列格式保存为 Excel。"""
     if session is None:
-        with create_session() as session:
-            return download_current(weeks, session)
+        with create_session() as new_session:
+            return download_current(weeks, new_session)
 
     response = session.get(
         f"{BASE_URL}/mad_ranking_results/{weeks}", timeout=30

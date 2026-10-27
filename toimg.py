@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import argparse
 import json
 import logging
@@ -69,7 +67,7 @@ def text_workers():
 
 
 def downcover(data):
-    rank, aid, link, destination = data
+    _rank, aid, link, destination = data
     try:
         response = requests.get(f"{link}@640w_400h.jpg")
     except requests.exceptions.MissingSchema:
