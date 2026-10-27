@@ -63,6 +63,11 @@ function ReCountResource() {
     }
 }
 
+// JSON.stringify keeps quotes, backslashes and newlines valid in the generated expression.
+function setSourceText(comp, layerName, value) {
+    comp.layer(layerName).property('Source Text').expression = 'text.sourceText=' + JSON.stringify(String(value)) + ';';
+}
+
 function AddAudioProperty(Target, Duration, Offset, Direction) {
     NewProperty = Target.property('Audio Levels');
     if (Direction == 1) {
@@ -113,23 +118,23 @@ for (i = 0; i < AllData.length; i++) {
     NTextLayer.moveAfter(PICKUIComp.layer(7));
     NTextLayer.trackMatteType = TrackMatteType.ALPHA;
     PICKUIComp.layer(8).remove();
-    TextComp.layer("AV号").property('Source Text').expression = 'text.sourceText="' + AllData[i].av + '";';
-    TextComp.layer("上传者ID").property('Source Text').expression = 'text.sourceText="' + AllData[i].up + '";';
-    TextComp.layer("日期").property('Source Text').expression = 'text.sourceText="' + AllData[i].pubdate + '";';
-    TextComp.layer(TextComp.layer("Shape Layer 1").index - 1).property('Source Text').expression = 'text.sourceText="' + AllData[i].type + '";';
-    TextComp.layer(2).property('Source Text').expression = 'text.sourceText="　　' + AllData[i].comment.substring(1) + '";';
-    TextComp.layer(1).property('Source Text').expression = 'text.sourceText="' + AllData[i].comment.substring(0, 1) + '";';
+    setSourceText(TextComp, 'AV号', AllData[i].av);
+    setSourceText(TextComp, '上传者ID', AllData[i].up);
+    setSourceText(TextComp, '日期', AllData[i].pubdate);
+    setSourceText(TextComp, TextComp.layer('Shape Layer 1').index - 1, AllData[i].type.replace(/\\n/g, '\n'));
+    setSourceText(TextComp, 2, '　　' + AllData[i].comment.substring(1));
+    setSourceText(TextComp, 1, AllData[i].comment.substring(0, 1));
     if (AllData[i].av >= 10000000000) {
-        TextComp.layer("Shape Layer 1").property('Position').setValue([767.5, 361.5]);
-        TextComp.layer("上传者ID").property('Position').setValue([589, 656.4]);
+        TextComp.layer('Shape Layer 1').property('Position').setValue([767.5, 361.5]);
+        TextComp.layer('上传者ID').property('Position').setValue([589, 656.4]);
     } else {
-        TextComp.layer("Shape Layer 1").property('Position').setValue([667.5, 361.5]);
-        TextComp.layer("上传者ID").property('Position').setValue([489, 656.4]);
+        TextComp.layer('Shape Layer 1').property('Position').setValue([667.5, 361.5]);
+        TextComp.layer('上传者ID').property('Position').setValue([489, 656.4]);
     }
     TitleImgLayer = TextComp.layers.add(app.project.items[ResourceID[AllData[i].rank + '_TEXT']], 40);
     OrigSize = TitleImgLayer.sourceRectAtTime(TitleImgLayer.inPoint, false);
     TitleImgLayer.property('Position').setValue([235 + OrigSize.width / 2, 636 + OrigSize.height / 2]);
-    MatteLayer = PICKUIComp.layer("Screen-Matte 2");
+    MatteLayer = PICKUIComp.layer('Screen-Matte 2');
     VideoLayer = PICKUIComp.layers.add(app.project.items[ResourceID[AllData[i].av]], 30);
     // VideoLayer.startTime = 0 - AllData[i].offset;
     VideoLayer.startTime = 0.5;
