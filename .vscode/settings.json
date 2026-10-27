@@ -1,17 +1,29 @@
 {
-    "eslint.validate": ["javascript", "javascriptreact"],
-    "eslint.workingDirectories": [{"mode": "auto"}],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact"
+    ],
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always",
         "source.fixAll.ruff": "always",
     },
-    "[javascript]": {"editor.defaultFormatter": "dbaeumer.vscode-eslint"},
-    "[javascriptreact]": {"editor.defaultFormatter": "dbaeumer.vscode-eslint"},
-    "[python]": {"editor.defaultFormatter": "charliermarsh.ruff"},
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
     "python.analysis.diagnosticMode": "workspace",
     "ruff.configuration": "pyproject.toml",
-    "ruff.exclude": ["*/**"],
     "ruff.lint.enable": true,
     "files.associations": {
         "*.ps1": "powershell",
