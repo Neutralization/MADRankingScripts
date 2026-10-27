@@ -213,6 +213,10 @@ for (RankNum = 20; RankNum >= 1; RankNum--) {
         MarkLayer.property('Opacity').setValueAtTime(FullVideoLayer.inPoint + 20, 100);
         MarkLayer.property('Opacity').setValueAtTime(TrueDuration - 3, 100);
         MarkLayer.property('Opacity').setValueAtTime(TrueDuration, 0);
+        if (UIComp.duration > TrueDuration) {
+            CurrentLayer = FinalComp.layer(UICompName);
+            CurrentLayer.outPoint = CurrentLayer.inPoint + delay + TrueDuration;
+        }
     }
     VideoLayer.startTime = 0 + delay;
     VideoLayer.inPoint = 0 + delay;
